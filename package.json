@@ -1,0 +1,28 @@
+{
+  "name": "todrawio-isyfact",
+  "version": "1.0.0",
+  "description": "A toolkit for exporting Archi models to draw.io using IsyFact conventions.",
+  "main": "src/main/todrawio-isyfact.js",
+  "scripts": {
+    "test": "node tests/test*.js",
+    "build": "esbuild src/main/todrawio-isyfact.js --platform=node --bundle --outfile=dist/todrawio-isyfact.bundle.ajs --loader:.xml=text "
+  },
+  "keywords": [
+    "drawio",
+    "archi",
+    "isyfact",
+    "export",
+    "xml"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fast-xml-parser": "^4.3.5"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5"
+  }
+}
