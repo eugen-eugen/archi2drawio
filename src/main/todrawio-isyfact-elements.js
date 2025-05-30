@@ -3,8 +3,7 @@ const {
   getGraphObject,
   adjustIds2,
   positioning2,
-  naming2,
-  unEscX,
+  naming2
 } = require("./todrawio-isyfact-isyfactlib.js");
 const {
   c4ObjLabel,
@@ -12,6 +11,7 @@ const {
   effectiveFontColor,
   setShapeColor,
   escX,
+  unEscX
 } = require("./todrawio-isyfact-functions.js");
 
 const isyfactlib = () => readDrawioLibraryJson();
@@ -75,20 +75,14 @@ function createElementWithLink(
 function createIsyFactElement(newId, name, description, parent, e, fw) {
   let ifType = e.prop("ifType");
   let graphObject = getGraphObject(isyfactlib(), ifType).xml;
-
-  const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent);
+  console.log("e.id:" + e.id);
+  const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent, e.id);
   const positioned = positioning2(adjusted, e.bounds.x, e.bounds.y, parent);
   const named = naming2(positioned, name);
 
+
   let label = c4ObjLabel(name, ifType, description, effectiveFontColor(e));
-  var mainObj = `			<object id="${newId}" c4Name="${name}" c4Description="${description}" c4Type="${ifType}" label="${label}" placeholders="1" tooltip="${c4Tooltip(
-    name,
-    ifType,
-    description
-  )}">
-        ${xmlBuilder.build(named.mxGraphModel.root)}
-    </object>
-`;
+  var mainObj = xmlBuilder.build(named.mxGraphModel.root)
 
   fw.write(mainObj);
 }

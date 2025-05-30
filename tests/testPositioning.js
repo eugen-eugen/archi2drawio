@@ -28,7 +28,7 @@ const input = `&lt;mxCell id=\"0\"/&gt;&lt;mxCell id=\"1\" parent=\"0\"/&gt;&lt;
 
 // Expected: only the root mxCell's mxGeometry gets x and y
 const x = 42, y = 99;
-const adjustedInput = adjustIds2(xmlParser.parse(unEscX(input)), "parent1"); // Adjust IDs to ensure the parent is set correctly
+const adjustedInput = adjustIds2(xmlParser.parse(unEscX(input)), "parent1", "4711"); // Adjust IDs to ensure the parent is set correctly
 const result = positioning2(adjustedInput, x, y, "parent1");
 
 console.log("Result:\n" + JSON.stringify(result, 0, 3));

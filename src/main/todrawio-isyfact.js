@@ -12,7 +12,6 @@
  * - Sets label property to C4 style.
  */
 const {
-  getAbsoluteBendpoints,
   escX
 } = require('./todrawio-isyfact-functions.js');
 
@@ -28,57 +27,6 @@ const {
 
 const { mapElementsC4 } = require('./mapElementsC4.js');
 
-
-const routeConnections = true;
-
-
-//*****************************************************************************
-// Utility functions (escX, getAbsoluteBendpoints, etc.) remain unchanged
-//*****************************************************************************
-
-/*
- * Author: Pedro Duque
- * Version: 0.2
- * Date: 2022-12-19
- *
- * PURPOSE:
- * This script exports an Archimate view to imported into draw.io (aka diagrams.net).
- *
- * USAGE:
- * - Select a view in Archi
- * - Export the view into the selected file
- * - Open or import the file in Draw.io
- * - Adjust as necessary
- *
- * NOTES:
- * - Nested shapes will have their relationships represented as transparent lines!
- * - properties names will be curated: spaces converted to _
- * - Doesn't support duplicated properties
- *
- * LIMITATIONS:
- * - Relationships routing in Archi doesn't reflect on draw.io 100%
- * - No support for specialization
- * - Some shapes not supported
- * - No support for labels
- * 
- * TODO's:
- * - All alternative shapes support
- * - Better error/exception handling
- * - automate the import process
- * 
- * CREDITS AND INSPIRATION:
- * smileham / Export View to Markdown (https://gist.github.com/smileham/578bbbb88dc0ed5a1403f3b98711ec25)
- * christhearchitect / ImportDrawio (https://gist.github.com/christhearchitect/ee35ab560d2d42773a5a982b5e240452)
- * xmayeur / jArchi library with functions to manage relationship layout in views (https://gist.github.com/xmayeur/bbe80af3d09706b34848b4bbfaa71103)
- *
- * CHANGE LOG:
- * - v0.2: support for utf8, bendpoints, custom shape styles and format.
- * - v0.1: initial version
- */
-
-//*****************************************************************************
-// CONFIGURATION
-//*****************************************************************************
 
 const useAlternativeShapes=false;  //if true the script will be sensible to alternative shapes defined. Otherwise it will use the default shape.
 
@@ -250,70 +198,6 @@ function copyStyle(e, style) {
 	return style;
 }
 
-//*****************************************************************************
-//
-// Handle Bendpoint coordinates, Entry and Exit points
-//
-//*****************************************************************************
-function getAbsCoords(e) {
-	let coords={ x:e.bounds.x, y:e.bounds.y, w:e.bounds.width, h:e.bounds.height };
-	let ancestors=$(e).parents();
-	ancestors.forEach(p => {
-		//This validation is not correct. It should be an easier way to check if its a shape!
-		if (typeof c4ElemMap.get(handleType(p))!=='undefined' && p.bounds) {
-			coords.x += p.bounds.x;
-			coords.y += p.bounds.y;
-		}
-	});
-	return coords;
-}
-
-
-function handleEntryExit(e) {
-    let result = { exit: "", entry: "" };
-    if (e.getRelativeBendpoints().length > 0 && typeof e.source.bounds !== 'undefined' && typeof e.target.bounds != 'undefined') {
-        let bps = getAbsoluteBendpoints(e);
-
-        let s = getAbsCoords(e.source);
-        let exitX, exitY, entryX, entryY;
-
-        if (bps[0].x <= s.x) {
-            exitX = 0;
-        } else if (s.x + s.w <= bps[0].x) {
-            exitX = 1;
-        } else {
-            exitX = 1.0 * (bps[0].x - s.x) / s.w;
-        }
-        if (bps[0].y <= s.y) {
-            exitY = 0;
-        } else if (s.y + s.h <= bps[0].y) {
-            exitY = 1;
-        } else {
-            exitY = 1.0 * (bps[0].y - s.y) / s.h;
-        }
-
-        let t = getAbsCoords(e.target);
-        let n = bps.length - 1;
-        if (bps[n].x <= t.x) {
-            entryX = 0;
-        } else if (t.x + t.w <= bps[n].x) {
-            entryX = 1;
-        } else {
-            entryX = (bps[n].x - t.x) / t.w;
-        }
-        if (bps[n].y <= t.y) {
-            entryY = 0;
-        } else if (t.y + t.h <= bps[n].y) {
-            entryY = 1;
-        } else {
-            entryY = (bps[n].y - t.y) / t.h;
-        }
-
-        result.exit = `exitX=${exitX};exitY=${exitY};`;
-        result.entry = `entryX=${entryX};entryY=${entryY};`;
-    }
-    return result;
-}
 
 
 // **********************************************************************
@@ -347,7 +231,7 @@ if (theView) {
         const date = new Date();
         const timeISOString = date.toISOString();
         
-        var fw = new OutputStreamWriter(new FileOutputStream(fileName, false), StandardCharsets.UTF_8);
+        var fw = new OutputStreamWriter(new FileOutputStream(fileName, false), StandardCharsets.ISO_8859_1);
         const header = 
 `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="" modified="${timeISOString}" agent="Archi" etag="${model.name}" type="device">

@@ -17,7 +17,8 @@ const xmlBuilder = new p.XMLBuilder({
     arrayNodeName: "mxCell",
     attributesGroupName: false,
     ignoreAttributes: false,
-    attributeNamePrefix: ""
+    attributeNamePrefix: "", 
+    format: true
 });
 
 // Test input: nested mxCell structure (escaped as in drawio lib)
@@ -27,7 +28,7 @@ const expectedParentId = "parent";
 
 // Run test
 const jsonObj = xmlParser.parse(unEscX(input2));
-const result = adjustIds2(jsonObj, expectedParentId);
+const result = adjustIds2(jsonObj, expectedParentId, "4711");
 console.log("Result:\n" + JSON.stringify(result, 0, 3));
 console.log("Adjusted mxCell:\n" + xmlBuilder.build(result.mxGraphModel.root));
 

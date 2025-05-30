@@ -46,7 +46,6 @@ function getGraphObject(lib, title) {
       if (!matches) {
         return obj;
       }
-
       obj.mxCell = matches ? matches.join("\n") : "";
       return obj;
     }
@@ -54,7 +53,7 @@ function getGraphObject(lib, title) {
   return null; // Not found
 }
 
-function adjustIds2(jsonObj, parentId) {
+function adjustIds2(jsonObj, parentId, elementId) {
   // Deep clone the input object to avoid mutation
   function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
@@ -103,7 +102,7 @@ function adjustIds2(jsonObj, parentId) {
   }
 
   // 5. Start from each root cell (can be more than one)
-  let rootId = randomId();
+  let rootId = elementId;
   for (let r = 0; r < rootCells.length; r++) {
     assignIds(
       rootCells[r].id,

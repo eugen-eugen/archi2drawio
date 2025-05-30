@@ -1,6 +1,7 @@
 # todrawio-isyfact
 
 A toolkit for exporting ArchiMate models and views to draw.io (diagrams.net) using IsyFact conventions and C4 shapes.
+Inspired by https://gist.github.com/pmduque/68a6fd0f23112fe27392833f4de0b6e5
 
 ## Features
 
@@ -51,7 +52,7 @@ npm test
 
 - The main entry point is `src/main/todrawio-isyfact.js`.
 - The bundled output is in `dist/todrawio-isyfact.bundle.ajs`.
-- The draw.io library XML is available in `dist/IsyFact.drawiolib.xml`.
+- Use the script odrawio-isyfact.bundle.ajs in your Archi tool in order to create a draw.io- file from currently selected archimate diagram
 
 ## Development Notes
 
@@ -69,4 +70,6 @@ MIT License
 **Credits & Inspiration:**
 - Pedro Duque (original author)
 - C4 Model (https://c4model.com/)
+- IsyFact https://github.com/isyfact
 - jArchi, draw.io, and the open-source community
+- Fast XML Parser https://github.com/NaturalIntelligence/fast-xml-parser

@@ -3,18 +3,87 @@ const {
   escX,
   effectiveFillColor,
   effectiveFontColor,
+  handleBendPoints,
+  createConnectorWithTopic,
+  createConnector,
+  getAbsoluteBendpoints
 } = require("./todrawio-isyfact-functions.js");
 
 const {
   createElementWithLink,
   createIsyFactElement,
-  createElementWithoutLink,
-  createConnectorWithTopic,
-  createConnector,
-  handleBendPoints,
+  createElementWithoutLink
 } = require("./todrawio-isyfact-elements.js");
 
 const { c4ElemMap, c4TypeMap, c4RelMap } = require("./constants.js");
+
+const routeConnections = true;
+
+
+//*****************************************************************************
+//
+// Handle Bendpoint coordinates, Entry and Exit points
+//
+//*****************************************************************************
+function getAbsCoords(e) {
+	let coords={ x:e.bounds.x, y:e.bounds.y, w:e.bounds.width, h:e.bounds.height };
+	let ancestors=$(e).parents();
+	ancestors.forEach(p => {
+		//This validation is not correct. It should be an easier way to check if its a shape!
+		if (typeof c4ElemMap.get(handleType(p))!=='undefined' && p.bounds) {
+			coords.x += p.bounds.x;
+			coords.y += p.bounds.y;
+		}
+	});
+	return coords;
+}
+
+function handleEntryExit(e) {
+    let result = { exit: "", entry: "" };
+    if (e.getRelativeBendpoints().length > 0 && typeof e.source.bounds !== 'undefined' && typeof e.target.bounds != 'undefined') {
+        let bps = getAbsoluteBendpoints(e);
+
+        let s = getAbsCoords(e.source);
+        let exitX, exitY, entryX, entryY;
+
+        if (bps[0].x <= s.x) {
+            exitX = 0;
+        } else if (s.x + s.w <= bps[0].x) {
+            exitX = 1;
+        } else {
+            exitX = 1.0 * (bps[0].x - s.x) / s.w;
+        }
+        if (bps[0].y <= s.y) {
+            exitY = 0;
+        } else if (s.y + s.h <= bps[0].y) {
+            exitY = 1;
+        } else {
+            exitY = 1.0 * (bps[0].y - s.y) / s.h;
+        }
+
+        let t = getAbsCoords(e.target);
+        let n = bps.length - 1;
+        if (bps[n].x <= t.x) {
+            entryX = 0;
+        } else if (t.x + t.w <= bps[n].x) {
+            entryX = 1;
+        } else {
+            entryX = (bps[n].x - t.x) / t.w;
+        }
+        if (bps[n].y <= t.y) {
+            entryY = 0;
+        } else if (t.y + t.h <= bps[n].y) {
+            entryY = 1;
+        } else {
+            entryY = (bps[n].y - t.y) / t.h;
+        }
+
+        result.exit = `exitX=${exitX};exitY=${exitY};`;
+        result.entry = `entryX=${entryX};entryY=${entryY};`;
+    }
+    return result;
+}
+
 
 function handleType(e) {
   let type;
