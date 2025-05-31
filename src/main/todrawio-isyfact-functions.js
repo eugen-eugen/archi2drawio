@@ -10,7 +10,6 @@ function isExternElement(e) {
     // Returns true if any parent folder of element e has the name "extern" (case-insensitive)
     let parents = $(e.concept).parents();
     for (let i = 0; i < parents.length; i++) {
-        console.log("parent: " + parents[i].name);
         if (parents[i].type === "folder" && parents[i].name && parents[i].name.toLowerCase() === "extern") {
             return true;
         }
@@ -241,7 +240,7 @@ function escX(s) {
     // Decode the string
     var decodedString = unescape(encodeURIComponent(s));
 
-    return decodedString
+    return s
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")

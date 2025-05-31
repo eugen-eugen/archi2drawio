@@ -124,14 +124,11 @@ function handleType(e) {
 }
 
 function mapElementsC4(fw, element, parent) {
-    console.log("Mapping elements in: " + element.name + " (" + element.id + ")");
     $(element)
         .children()
         .each(function (e) {
             let parentElements = $(e).parent();
-            console.log(
-                "Mapping element: " + e.name + " (" + e.id + ")" + " type: " + e.type + " parent: " + element.name
-            );
+
             let newId = e.id;
             let c4Name = escX(e.label && e.label.trim() !== "" ? e.label : e.text ? e.text : e.name || "");
             let c4Description = escX(e.documentation || "");

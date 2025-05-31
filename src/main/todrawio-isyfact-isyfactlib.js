@@ -30,7 +30,6 @@ function readDrawioLibraryJson(filePath) {
         throw new Error("No <mxlibrary>...</mxlibrary> section found.");
     }
     var jsonText = match[1].trim();
-    console.log(JSON.parse(jsonText).length);
     // Parse the JSON content
     return JSON.parse(jsonText);
 }
@@ -150,6 +149,14 @@ function positioning2(jsonObj, x, y, parentId) {
 }
 
 function naming2(dom, name) {
+    if (/Bin.+speicher/.test(name)) {
+        if (/Binärspeicher/.test(name)) {
+            console.log("properly encoded: " + name);
+        } else {
+            console.log("WARNING: name is not properly encoded: " + name);
+        }
+    }
+
     // Deep clone to avoid mutation
     function deepClone(obj) {
         return JSON.parse(JSON.stringify(obj));
