@@ -11,7 +11,7 @@
  * - Sets c4Name, c4Description, c4Type attributes.
  * - Sets label property to C4 style.
  */
-const { escX } = require("./todrawio-isyfact-functions.js");
+const { escX, getDiagramBoundaries } = require("./todrawio-isyfact-functions.js");
 
 const { readDrawioLibraryJson } = require("./todrawio-isyfact-isyfactlib.js");
 
@@ -70,7 +70,6 @@ var FileOutputStream = Java.type("java.io.FileOutputStream");
 var StandardCharsets = Java.type("java.nio.charset.StandardCharsets");
 
 var theView = $(selection).filter("archimate-diagram-model").first();
-var isyfactlib = readDrawioLibraryJson(__DIR__ + "IsyFact.drawiolib.xml");
 
 if (theView) {
     const fileName = window.promptSaveFile({
@@ -83,7 +82,6 @@ if (theView) {
         const date = new Date();
         const timeISOString = date.toISOString();
         var Charset = Java.type("java.nio.charset.Charset");
-        console.log("Default charset: " + Charset.defaultCharset().name());
 
         var fw = new OutputStreamWriter(new FileOutputStream(fileName, false));
         const header = `<?xml version="1.0" encoding="UTF-8"?>
@@ -96,7 +94,7 @@ if (theView) {
 `;
         fw.write(header);
 
-        mapElementsC4(fw, theView, "1");
+        mapElementsC4(fw, theView, "1", theView);
 
         var footer = `			</root>
         </mxGraphModel>

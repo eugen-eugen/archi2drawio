@@ -4,6 +4,7 @@ const {
     adjustIds2,
     positioning2,
     naming2,
+    sizing2,
 } = require("./todrawio-isyfact-isyfactlib.js");
 const {
     c4ObjLabel,
@@ -67,9 +68,10 @@ function createIsyFactElement(newId, name, description, parent, e, fw) {
     const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent, e.id);
     const positioned = positioning2(adjusted, e.bounds.x, e.bounds.y, parent);
     const named = naming2(positioned, name);
+    const sized = sizing2(named, e.bounds.width, e.bounds.height, parent);
 
     let label = c4ObjLabel(name, ifType, description, effectiveFontColor(e));
-    var mainObj = xmlBuilder.build(named.mxGraphModel.root);
+    var mainObj = xmlBuilder.build(sized.mxGraphModel.root);
 
     fw.write(mainObj);
 }

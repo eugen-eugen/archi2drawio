@@ -7,6 +7,9 @@ const {
     createConnectorWithTopic,
     createConnector,
     getAbsoluteBendpoints,
+    getDiagramBoundaries,
+    getBoundaryLabelPosition,
+    getAbsBounds,
 } = require("./todrawio-isyfact-functions.js");
 
 const {
@@ -123,7 +126,22 @@ function handleType(e) {
     return type;
 }
 
-function mapElementsC4(fw, element, parent) {
+function mappingType(e) {
+    const parents = $(e).parents();
+    const values = parents.prop("mappingType", true);
+    if (values === null) return undefined;
+    console.log("values ", values);
+    const types = new Set(values);
+
+    if (types.size === 0) {
+        return undefined;
+    } else if (types.size === 1) {
+        return Array.from(types)[0];
+    } else {
+        throw new Error("Conflicting mappingType values found in ancestors: " + Array.from(types).join(", "));
+    }
+}
+function mapElementsC4(fw, element, parent, diagram) {
     $(element)
         .children()
         .each(function (e) {
@@ -138,7 +156,10 @@ function mapElementsC4(fw, element, parent) {
             let parentHasPort = false;
             parentElements.each(function (p) {
                 if (typeof p.prop === "function" && p.prop().includes("port")) {
+                    console.log("Element is port: " + e);
                     parentHasPort = true;
+                    portName = p.prop("port") || c4Name;
+                    c4Name = "";
                     return false; // Break the loop
                 }
             });
@@ -149,9 +170,10 @@ function mapElementsC4(fw, element, parent) {
                 baseStyle = c4ElemMap.get("port");
             } else {
                 // Determine c4Type: use property if present, else from map, else default
+                mType = mappingType(e);
                 c4Type =
-                    typeof e.prop === "function" && e.prop("c4Type") && e.prop("c4Type").trim() !== ""
-                        ? escX(e.prop("c4Type"))
+                    mType !== "if" && typeof e.prop === "function" && e.prop("c4Type") && e.prop("c4Type").trim() !== ""
+                        ? e.prop("c4Type")
                         : c4TypeMap.get(archiType) || c4TypeMap.get("default");
 
                 // If c4Type is set, try to use it to lookup in c4ElemMap first
@@ -238,8 +260,22 @@ function mapElementsC4(fw, element, parent) {
                     console.log("Not Found: " + e.id + "," + e.type + "\n");
                 }
             }
+            if (parentHasPort) {
+                diagramBoundaries = getDiagramBoundaries($(diagram));
+                console.log("bounds: " + JSON.stringify(getAbsBounds(e)));
+                boundaryLabelPosition = getBoundaryLabelPosition(diagramBoundaries, getAbsBounds(e), 100, 50);
+
+                const text = `<mxCell id="${e.id}-label" value="${
+                    portName || c4Name
+                }" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxGeometry x="${boundaryLabelPosition.x}" y="${
+                    boundaryLabelPosition.y
+                }" width="100" height="50" as="geometry" /></mxCell>
+                `;
+                fw.write(text);
+            }
             // Recursively process children
-            mapElementsC4(fw, e, newId);
+            mapElementsC4(fw, e, newId, diagram);
         });
 }
 

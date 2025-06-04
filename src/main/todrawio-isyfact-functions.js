@@ -282,6 +282,117 @@ function effectiveFontColor(e) {
     return colorFactory().convertColorToString(color);
 }
 
+/**
+ * Recursively calculates the absolute bounds of an element.
+ * Each element must have a .bounds property ({x, y, width, height}) and may have a .parent property.
+ * @param {object} e - The element with .bounds and optional .parent
+ * @returns {{x: number, y: number, width: number, height: number}}
+ */
+function getAbsBounds(e) {
+    let absX = (e.bounds && e.bounds.x) || 0;
+    let absY = (e.bounds && e.bounds.y) || 0;
+    let width = (e.bounds && e.bounds.width) || 0;
+    let height = (e.bounds && e.bounds.height) || 0;
+    $(e)
+        .parents()
+        .each((current) => {
+            absX += (current.bounds && current.bounds.x) || 0;
+            absY += (current.bounds && current.bounds.y) || 0;
+        });
+    return { x: absX, y: absY, width, height };
+}
+
+/**
+ * Calculates the bounding rectangle (top-left and bottom-right) that contains all elements,
+ * including all children's bounds recursively. Child bounds are relative to parent and must be accumulated.
+ * @param {object} elements - Collection with each(e) function, each e has bounds: {x, y, width, height}
+ * @returns {{currentBounds: {topLeft: {x: number, y: number}, bottomRight: {x: number, y: number}}} | undefined}
+ */
+function getDiagramBoundaries(elements) {
+    let topLeft = { x: Infinity, y: Infinity };
+    let bottomRight = { x: -Infinity, y: -Infinity };
+
+    function processElement(e, offsetX = 0, offsetY = 0) {
+        const absX = offsetX + (e.bounds ? e.bounds.x : 0);
+        const absY = offsetY + (e.bounds ? e.bounds.y : 0);
+        if (e.bounds) {
+            const x1 = absX;
+            const y1 = absY;
+            const x2 = absX + e.bounds.width;
+            const y2 = absY + e.bounds.height;
+            if (x1 < topLeft.x) topLeft.x = x1;
+            if (y1 < topLeft.y) topLeft.y = y1;
+            if (x2 > bottomRight.x) bottomRight.x = x2;
+            if (y2 > bottomRight.y) bottomRight.y = y2;
+            // Process children with updated offset
+        }
+        if (typeof $(e).children === "function") {
+            const children = $(e).children();
+
+            if (children && typeof children.each === "function") {
+                children.each((child) => processElement(child, absX, absY));
+            }
+        }
+    }
+
+    elements.each((e) => processElement(e, 0, 0));
+
+    if (!isFinite(topLeft.x) || !isFinite(topLeft.y) || !isFinite(bottomRight.x) || !isFinite(bottomRight.y)) {
+        return undefined;
+    }
+    return {
+        topLeft,
+        bottomRight,
+    };
+}
+
+/**
+ * Calculates the best position for a label near an anchor element, avoiding overlap,
+ * and placing it towards the nearest diagram boundary.
+ * @param {{currentBounds: {topLeft: {x: number, y: number}, bottomRight: {x: number, y: number}}}} diagramBoundaries
+ * @param {{x: number, y: number, width: number, height: number}} anchorBounds
+ * @param {number} labelWidth
+ * @param {number} labelHeight
+ * @returns {{x: number, y: number}}
+ */
+function getBoundaryLabelPosition(diagramBoundaries, anchorBounds, labelWidth, labelHeight) {
+    const { topLeft, bottomRight } = diagramBoundaries;
+    // Center of anchor
+    const anchorCenterX = anchorBounds.x + anchorBounds.width / 2;
+    const anchorCenterY = anchorBounds.y + anchorBounds.height / 2;
+
+    // Distances to each boundary (absolute values)
+    const distTop = Math.abs(anchorBounds.y - topLeft.y);
+    const distBottom = Math.abs(bottomRight.y - (anchorBounds.y + anchorBounds.height));
+    const distLeft = Math.abs(anchorBounds.x - topLeft.x);
+    const distRight = Math.abs(bottomRight.x - (anchorBounds.x + anchorBounds.width));
+
+    // Find the minimum distance
+    const minDist = Math.min(distTop, distBottom, distLeft, distRight);
+
+    let labelX, labelY;
+
+    if (minDist === distTop) {
+        // Place label above anchor
+        labelX = anchorCenterX - labelWidth / 2;
+        labelY = anchorBounds.y - labelHeight - 4;
+    } else if (minDist === distBottom) {
+        // Place label below anchor
+        labelX = anchorCenterX - labelWidth / 2;
+        labelY = anchorBounds.y + anchorBounds.height + 4;
+    } else if (minDist === distLeft) {
+        // Place label to the left of anchor
+        labelX = anchorBounds.x - labelWidth - 4;
+        labelY = anchorCenterY - labelHeight / 2;
+    } else {
+        // Place label to the right of anchor
+        labelX = anchorBounds.x + anchorBounds.width + 4;
+        labelY = anchorCenterY - labelHeight / 2;
+    }
+
+    return { x: labelX, y: labelY };
+}
+
 module.exports = {
     addFontSizeToStyle,
     isExternElement,
@@ -297,4 +408,7 @@ module.exports = {
     effectiveFillColor,
     effectiveFontColor,
     unEscX,
+    getDiagramBoundaries,
+    getBoundaryLabelPosition,
+    getAbsBounds,
 };

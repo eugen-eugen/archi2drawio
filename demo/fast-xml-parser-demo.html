@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fast-XML-Parser Demo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fast-xml-parser/4.5.1/fxparser.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        textarea { width: 100%; height: 120px; }
+        pre { background: #f4f4f4; padding: 1em; }
+        .container { max-width: 700px; margin: auto; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Fast-XML-Parser Demo</h2>
+    <p>Paste your XML below and click "Parse". The parsed JSON will appear below.</p>
+    <textarea id="xmlInput" placeholder="Paste XML here...">&lt;note&gt;&lt;to&gt;World&lt;/to&gt;&lt;from&gt;Fast-XML-Parser&lt;/from&gt;&lt;message&gt;Hello!&lt;/message&gt;&lt;/note&gt;</textarea>
+    <br>
+    <button onclick="parseXML()">Parse</button>
+    <h3>Parsed JSON:</h3>
+    <pre id="jsonOutput"></pre>
+</div>
+<script>
+    function parseXML() {
+        const xml = document.getElementById('xmlInput').value;
+        try {
+            const options = {
+                ignoreAttributes: false,
+                attributeNamePrefix: "@_"
+            };
+            const parser = new window.XMLParser(options);
+            const json = parser.parse(xml);
+            document.getElementById('jsonOutput').textContent = JSON.stringify(json, null, 2);
+        } catch (err) {
+            document.getElementById('jsonOutput').textContent = "Error: " + err.message;
+        }
+    }
+</script>
+</body>
+</html>

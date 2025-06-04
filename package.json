@@ -4,7 +4,7 @@
   "description": "A toolkit for exporting Archi models to draw.io using IsyFact conventions.",
   "main": "src/main/todrawio-isyfact.js",
   "scripts": {
-    "test": "node tests/test*.js",
+    "test": "mocha --parallel tests/**/test*.js",
     "build": "esbuild src/main/todrawio-isyfact.js --platform=node --bundle --outfile=dist/todrawio-isyfact.bundle.ajs --loader:.xml=text "
   },
   "keywords": [
@@ -23,6 +23,8 @@
     "test": "tests"
   },
   "devDependencies": {
-    "esbuild": "^0.25.5"
+    "esbuild": "^0.25.5",
+    "mocha": "^10.0.0",
+    "chai": "^4.3.0"
   }
 }

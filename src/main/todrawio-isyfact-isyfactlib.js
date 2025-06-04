@@ -12,6 +12,19 @@ xmlBuilder = new p.XMLBuilder({
     attributeNamePrefix: "",
 });
 
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+function getMxCells(obj) {
+    if (obj.mxGraphModel && obj.mxGraphModel.root && Array.isArray(obj.mxGraphModel.root.mxCell)) {
+        return obj.mxGraphModel.root.mxCell;
+    } else if (Array.isArray(obj.mxCell)) {
+        return obj.mxCell;
+    } else {
+        throw new Error("Unsupported JSON structure for mxCell operations");
+    }
+}
 function readDrawioLibraryJson(filePath) {
     let drawioLibXml;
     try {
@@ -51,9 +64,6 @@ function getGraphObject(lib, title) {
 
 function adjustIds2(jsonObj, parentId, elementId) {
     // Deep clone the input object to avoid mutation
-    function deepClone(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
 
     let obj = deepClone(jsonObj);
 
@@ -121,57 +131,20 @@ function adjustIds2(jsonObj, parentId, elementId) {
 }
 
 function positioning2(jsonObj, x, y, parentId) {
-    // Deep clone to avoid mutation
-    function deepClone(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
     let obj = deepClone(jsonObj);
-
-    // Find all mxCell objects
-    let cells = [];
-    if (obj.mxGraphModel && obj.mxGraphModel.root && Array.isArray(obj.mxGraphModel.root.mxCell)) {
-        cells = obj.mxGraphModel.root.mxCell;
-    } else if (Array.isArray(obj.mxCell)) {
-        cells = obj.mxCell;
-    } else {
-        throw new Error("Unsupported JSON structure for positioning2");
-    }
-
-    // For each mxCell with parent == parentId, set x and y in its mxGeometry
+    let cells = getMxCells(obj);
     cells.forEach((cell) => {
         if (cell.parent === parentId && cell.mxGeometry) {
             cell.mxGeometry.x = x;
             cell.mxGeometry.y = y;
         }
     });
-
     return obj;
 }
 
 function naming2(dom, name) {
-    if (/Bin.+speicher/.test(name)) {
-        if (/Binärspeicher/.test(name)) {
-            console.log("properly encoded: " + name);
-        } else {
-            console.log("WARNING: name is not properly encoded: " + name);
-        }
-    }
-
-    // Deep clone to avoid mutation
-    function deepClone(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
     let obj = deepClone(dom);
-
-    // Find all mxCell objects
-    let cells = [];
-    if (obj.mxGraphModel && obj.mxGraphModel.root && Array.isArray(obj.mxGraphModel.root.mxCell)) {
-        cells = obj.mxGraphModel.root.mxCell;
-    } else if (Array.isArray(obj.mxCell)) {
-        cells = obj.mxCell;
-    } else {
-        throw new Error("Unsupported JSON structure for naming2");
-    }
+    let cells = getMxCells(obj);
 
     // Regex to match value like: «something»<br><b>something-else</b>
     const valueRegex = /^«[^»]+»<br><b>[^<]*<\/b>$/;
@@ -180,7 +153,6 @@ function naming2(dom, name) {
 
     cells.forEach((cell) => {
         if (typeof cell.value === "string") {
-            console.log("naming:", name, "cell value:", cell.value);
             if (valueRegex.test(cell.value)) {
                 // Replace the part inside <b>...</b> with the new name
                 cell.value = cell.value.replace(/(<b>)[^<]*(<\/b>)/, `$1${name}$2`);
@@ -194,7 +166,60 @@ function naming2(dom, name) {
     return obj;
 }
 
-// Add this at the end of the file to export all functions
+function sizing2(jsonObj, width, height, parentId) {
+    let obj = deepClone(jsonObj);
+    let cells = getMxCells(obj);
+
+    // Find first-level cells (direct children of parentId)
+    let firstLevelCells = cells.filter((cell) => cell.parent === parentId && cell.mxGeometry);
+
+    // Store original sizes and calculate ratios
+    let ratios = {};
+    firstLevelCells.forEach((cell) => {
+        const origWidth = Number(cell.mxGeometry.width) || 1;
+        const origHeight = Number(cell.mxGeometry.height) || 1;
+        ratios[cell.id] = {
+            x: width / origWidth,
+            y: height / origHeight,
+            origWidth,
+            origHeight,
+        };
+        // Set new size for first-level cell
+        cell.mxGeometry.width = width;
+        cell.mxGeometry.height = height;
+    });
+
+    // Recursively resize children according to their first-level ancestor's ratio
+    function resizeChildren(parentCell, ratioX, ratioY) {
+        cells.forEach((child) => {
+            if (child.parent === parentCell.id && child.mxGeometry) {
+                // Skip resizing if mxGeometry.relative == 1
+                if (child.mxGeometry.relative === 1 || child.mxGeometry.relative === "1") {
+                    return;
+                }
+
+                // Scale geometry, converting to number if needed
+                if (child.mxGeometry.x !== undefined) child.mxGeometry.x = Number(child.mxGeometry.x) * ratioX;
+                if (child.mxGeometry.y !== undefined) child.mxGeometry.y = Number(child.mxGeometry.y) * ratioY;
+                if (child.mxGeometry.width !== undefined)
+                    child.mxGeometry.width = Number(child.mxGeometry.width) * ratioX;
+                if (child.mxGeometry.height !== undefined)
+                    child.mxGeometry.height = Number(child.mxGeometry.height) * ratioY;
+                // Recursively process further children
+                resizeChildren(child, ratioX, ratioY);
+            }
+        });
+    }
+
+    // For each first-level cell, resize its children
+    firstLevelCells.forEach((cell) => {
+        const ratioX = ratios[cell.id].x;
+        const ratioY = ratios[cell.id].y;
+        resizeChildren(cell, ratioX, ratioY);
+    });
+
+    return obj;
+} // Add this at the end of the file to export all functions
 
 module.exports = {
     readDrawioLibraryJson,
@@ -202,4 +227,5 @@ module.exports = {
     adjustIds2,
     positioning2,
     naming2,
+    sizing2,
 };
