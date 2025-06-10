@@ -5,85 +5,52 @@ const {
     positioning2,
     naming2,
     sizing2,
+    coloring2,
+    xmlParser,
+    xmlBuilder,
 } = require("./todrawio-isyfact-isyfactlib.js");
 const {
     c4ObjLabel,
     c4Tooltip,
     effectiveFontColor,
-    setShapeColor,
+    effectiveFillColor,
     escX,
     unEscX,
+    portName,
 } = require("./todrawio-isyfact-functions.js");
 
-const isyfactlib = () => readDrawioLibraryJson();
-function createElementWithLink(newId, c4Name, c4Type, c4Description, style, parent, e, linkValue, fw) {
-    // Group id and main object id
-    let groupId = `${newId}_group`;
-    let mainObjId = `${newId}`;
-
-    // Main element
-    style = setShapeColor(style, e);
-    var newElem = `<mxCell style="${style}" vertex="1" parent="${groupId}">
-        <mxGeometry x="0" y="0" width="${e.bounds.width}" height="${e.bounds.height}" as="geometry" />
-    </mxCell>
-`;
-    let label = c4ObjLabel(c4Name, c4Type, c4Description, effectiveFontColor(e));
-    var mainObj = `			<object id="${mainObjId}" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label}" placeholders="1" tooltip="${c4Tooltip(
-        c4Name,
-        c4Type,
-        c4Description
-    )}" link="${escX(linkValue)}">
-        ${newElem}
-    </object>
-`;
-
-    // Link icon element
-    let iconSize = 24;
-    let iconX = e.bounds.width - iconSize;
-    let iconY = 0;
-    let linkIconObj = `           <object id="${newId}_linkicon" label="" link="${escX(linkValue)}">
-        <mxCell style="shape=mxgraph.ios7.misc.link;html=1;aspect=fixed;fillColor=#4CDA64;strokeColor=#000000;" vertex="1" parent="${groupId}">
-            <mxGeometry x="${iconX}" y="${iconY}" width="${iconSize}" height="${iconSize}" as="geometry" />
-        </mxCell>
-    </object>
-`;
-
-    // Group element
-    let groupObj = `           <object id="${groupId}" label="">
-        <mxCell vertex="1" style="group" connectable="0" parent="${parent}">
-            <mxGeometry x="${e.bounds.x}" y="${e.bounds.y}" width="${e.bounds.width}" height="${e.bounds.height}" as="geometry" />
-        </mxCell>	
-    </object>
-`;
-
-    // Write group, then children (order: group, main, icon)
-    fw.write(groupObj);
-    fw.write(mainObj);
-    fw.write(linkIconObj);
-}
-function createIsyFactElement(newId, name, description, parent, e, fw) {
-    let ifType = e.prop("ifType");
-    let graphObject = getGraphObject(isyfactlib(), ifType).xml;
-    console.log("e.id:" + e.id);
-    const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent, e.id);
-    const positioned = positioning2(adjusted, e.bounds.x, e.bounds.y, parent);
+const elementLib = () => readDrawioLibraryJson();
+function createIsyFactElement(newId, name, description, parent, element, bounds, shift) {
+    let ifType = element.prop("ifType");
+    let graphObject = getGraphObject(elementLib(), ifType).xml;
+    const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent, newId);
+    const x = bounds.x - shift.x;
+    const y = bounds.y - shift.y;
+    const positioned = positioning2(adjusted, x, y, parent);
     const named = naming2(positioned, name);
-    const sized = sizing2(named, e.bounds.width, e.bounds.height, parent);
+    const sized = sizing2(named, bounds.width, bounds.height, parent);
+    const colored = coloring2(sized, effectiveFillColor(element), effectiveFontColor(element), element.opacity);
 
-    let label = c4ObjLabel(name, ifType, description, effectiveFontColor(e));
-    var mainObj = xmlBuilder.build(sized.mxGraphModel.root);
+    let label = c4ObjLabel(name, ifType, description, effectiveFontColor(element));
+    var mainObj = xmlBuilder.build(colored.mxGraphModel.root);
 
-    fw.write(mainObj);
+    return mainObj;
 }
-function createElementWithoutLink(newId, c4Name, c4Type, c4Description, style, parent, e, fw) {
-    // Main element (no link)
-    console.log("createElementWithoutLink: " + c4Name + "" + c4Type + " " + c4Description);
-    style = setShapeColor(style, e);
-    var newElem = `<mxCell style="${style}" vertex="1" parent="${parent}">
-        <mxGeometry x="${e.bounds.x}" y="${e.bounds.y}" width="${e.bounds.width}" height="${e.bounds.height}" as="geometry" />
-    </mxCell>
-`;
-    let label = c4ObjLabel(c4Name, c4Type, c4Description, effectiveFontColor(e));
+function createC4Element(newId, c4Name, c4Type, c4Description, parent, element, bounds, shift) {
+    let graphObject = getGraphObject(elementLib(), c4Type).xml;
+    const adjusted = adjustIds2(xmlParser.parse(unEscX(graphObject)), parent, newId + "-cell");
+    port = portName(element, c4Name);
+    let x = bounds.x - shift.x;
+    let y = bounds.y - shift.y;
+
+    const positioned = positioning2(adjusted, x, y, parent);
+    const named = naming2(positioned, port ? "" : c4Name);
+    const sized = sizing2(named, bounds.width, bounds.height, parent);
+    const colored = coloring2(sized, effectiveFillColor(element), effectiveFontColor(element), element.opacity);
+
+    var newElem = xmlBuilder.build(colored.mxGraphModel.root);
+
+    let label = c4ObjLabel(c4Name, c4Type, c4Description, effectiveFontColor(element));
     var mainObj = `			<object id="${newId}" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label}" placeholders="1" tooltip="${c4Tooltip(
         c4Name,
         c4Type,
@@ -92,14 +59,38 @@ function createElementWithoutLink(newId, c4Name, c4Type, c4Description, style, p
         ${newElem}
     </object>
 `;
+    return mainObj;
+}
 
-    fw.write(mainObj);
+function createLinkWrapper(groupId, parent, bounds, link) {
+    // Group element
+    let groupObj = `           <object id="${groupId}" label="" link="${escX(link)}">
+        <mxCell vertex="1" style="group" connectable="0" parent="${parent}">
+            <mxGeometry x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${
+        bounds.height
+    }" as="geometry" />
+        </mxCell>	
+    </object>
+`;
+
+    // Link icon element
+    let iconSize = 24;
+    let iconX = 0;
+    let iconY = 0;
+    let linkIconObj = `           <object id="${groupId}_linkicon" label="" link="${escX(link)}">
+        <mxCell style="shape=mxgraph.ios7.misc.link;html=1;aspect=fixed;fillColor=#4CDA64;strokeColor=#000000;" vertex="1" parent="${groupId}">
+            <mxGeometry x="${iconX}" y="${iconY}" width="${iconSize}" height="${iconSize}" as="geometry" />
+        </mxCell>
+    </object>
+`;
+
+    return { groupObj: groupObj, linkIconObj: linkIconObj };
 }
 
 // Add this at the end of the file to export all functions
 
 module.exports = {
-    createElementWithLink,
     createIsyFactElement,
-    createElementWithoutLink,
+    createC4Element,
+    createLinkWrapper,
 };

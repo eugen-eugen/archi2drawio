@@ -38,8 +38,5 @@ describe("adjustIds2", () => {
         // Optionally, check that all ids are unique and replaced as expected
         const allIds = rootCells.map((cell) => cell.id);
         expect(new Set(allIds).size).to.equal(allIds.length);
-
-        // Optionally, print the adjusted XML for manual inspection
-        //console.log(xmlBuilder.build(result.mxGraphModel.root));
     });
 });

@@ -4,21 +4,19 @@ const {
     effectiveFillColor,
     effectiveFontColor,
     handleBendPoints,
-    createConnectorWithTopic,
     createConnector,
     getAbsoluteBendpoints,
     getDiagramBoundaries,
     getBoundaryLabelPosition,
+    getPortPosition,
     getAbsBounds,
+    portName,
 } = require("./todrawio-isyfact-functions.js");
 
-const {
-    createElementWithLink,
-    createIsyFactElement,
-    createElementWithoutLink,
-} = require("./todrawio-isyfact-elements.js");
+const { createIsyFactElement, createC4Element, createLinkWrapper } = require("./todrawio-isyfact-elements.js");
 
 const { c4ElemMap, c4TypeMap, c4RelMap } = require("./constants.js");
+const { createConnectorWithTopic } = require("./todrawio-connectors.js");
 
 const routeConnections = true;
 
@@ -127,53 +125,53 @@ function handleType(e) {
 }
 
 function mappingType(e) {
-    const parents = $(e).parents();
-    const values = parents.prop("mappingType", true);
-    if (values === null) return undefined;
-    console.log("values ", values);
-    const types = new Set(values);
+    const types = new Set();
+    $(e)
+        .parents()
+        .each((p) => {
+            const newLocal = p.prop("mappingType", true);
+            newLocal && types.add(...newLocal);
+        });
 
     if (types.size === 0) {
         return undefined;
     } else if (types.size === 1) {
         return Array.from(types)[0];
     } else {
-        throw new Error("Conflicting mappingType values found in ancestors: " + Array.from(types).join(", "));
+        throw new Error(
+            "Conflicting mappingType values found in ancestors: (" + types.size + ")" + Array.from(types).join(", ")
+        );
     }
 }
-function mapElementsC4(fw, element, parent, diagram) {
+function mapElementsC4(fw, element, diagram) {
     $(element)
         .children()
-        .each(function (e) {
-            let parentElements = $(e).parent();
+        .each(function (child) {
+            parentId = element.id;
 
-            let newId = e.id;
-            let c4Name = escX(e.label && e.label.trim() !== "" ? e.label : e.text ? e.text : e.name || "");
-            let c4Description = escX(e.documentation || "");
-            let archiType = handleType(e);
+            let c4Name = escX(
+                child.label && child.label.trim() !== "" ? child.label : child.text ? child.text : child.name || ""
+            );
+            let c4Description = escX(child.documentation || "");
+            let archiType = handleType(child);
 
             // Check if parent element has property "port"
-            let parentHasPort = false;
-            parentElements.each(function (p) {
-                if (typeof p.prop === "function" && p.prop().includes("port")) {
-                    console.log("Element is port: " + e);
-                    parentHasPort = true;
-                    portName = p.prop("port") || c4Name;
-                    c4Name = "";
-                    return false; // Break the loop
-                }
-            });
-
+            let port = portName(child, c4Name);
+            let bounds = child.bounds;
             let c4Type, baseStyle;
-            if (parentHasPort) {
+            if (port) {
                 c4Type = "port";
                 baseStyle = c4ElemMap.get("port");
+                bounds = bounds4Port(getDiagramBoundaries($(diagram)), child);
             } else {
                 // Determine c4Type: use property if present, else from map, else default
-                mType = mappingType(e);
+                mType = mappingType(child);
                 c4Type =
-                    mType !== "if" && typeof e.prop === "function" && e.prop("c4Type") && e.prop("c4Type").trim() !== ""
-                        ? e.prop("c4Type")
+                    mType !== "if" &&
+                    typeof child.prop === "function" &&
+                    child.prop("c4Type") &&
+                    child.prop("c4Type").trim() !== ""
+                        ? child.prop("c4Type")
                         : c4TypeMap.get(archiType) || c4TypeMap.get("default");
 
                 // If c4Type is set, try to use it to lookup in c4ElemMap first
@@ -182,101 +180,105 @@ function mapElementsC4(fw, element, parent, diagram) {
                         ? c4ElemMap.get(c4Type)
                         : c4ElemMap.get(archiType) || c4ElemMap.get("default");
             }
-            let style = baseStyle;
-
-            // --- If template does not contain fontColor/fillColor, use Archi element color ---
-            var fontColor = effectiveFontColor(e);
-            if (!/fontColor=/.test(baseStyle)) {
-                style += `fontColor=${fontColor};`;
-            }
-            if (!/fillColor=/.test(baseStyle)) {
-                style += `fillColor=${effectiveFillColor(e)};`;
-            }
-
-            // --- Add opacity if present ---
-            if (typeof e.opacity !== "undefined" && e.opacity !== null) {
-                let opacity = Math.round((e.opacity / 255) * 100);
-                style = style + `opacity=${opacity};`;
-            }
-
-            // --- Add fontSize based on element size ---
-            style = addFontSizeToStyle(style, e);
 
             // --- Add link attribute if present ---
             let linkValue = "";
+            let shift = { x: 0, y: 0 };
             let hasLink = false;
-            if (typeof e.prop === "function") {
-                linkValue = e.prop("link");
-                if (linkValue && linkValue.trim() !== "") {
-                    hasLink = true;
-                }
+            linkWrapper = undefined;
+            linkValue = child.prop("link");
+
+            if (linkValue && linkValue.trim() !== "") {
+                hasLink = true;
+                wrappedId = child.id + "_linkwrapper";
+                shift = { x: bounds.x, y: bounds.y };
+                linkWrapper = createLinkWrapper(wrappedId, parentId, bounds, linkValue);
+                parentId = wrappedId;
             }
             //*** Map shapes ***
-
-            if (e.prop("ifType")) {
-                createIsyFactElement(newId, c4Name, c4Description, parent, e, fw);
+            drawioObj = "";
+            if (child.prop("ifType") && !port) {
+                drawioObj = createIsyFactElement(child.id, c4Name, c4Description, parentId, child, bounds, shift);
             } else if (typeof baseStyle !== "undefined") {
-                if (hasLink) {
-                    createElementWithLink(newId, c4Name, c4Type, c4Description, style, parent, e, linkValue, fw);
-                } else {
-                    createElementWithoutLink(newId, c4Name, c4Type, c4Description, style, parent, e, fw);
-                }
+                drawioObj = createC4Element(child.id, c4Name, c4Type, c4Description, parentId, child, bounds, shift);
             } else {
                 //*** Map relationships ***
                 let relStyle = c4RelMap.get(archiType) || c4RelMap.get("default");
                 if (typeof relStyle !== "undefined") {
-                    let entryExit = routeConnections ? handleEntryExit(e) : null;
+                    let entryExit = routeConnections ? handleEntryExit(child) : null;
                     // Check for "topic" property
-                    let topic = typeof e.prop === "function" && e.prop("topic") && e.prop("topic").trim();
+                    let topic = typeof child.prop === "function" && child.prop("topic") && child.prop("topic").trim();
                     if (topic) {
-                        createConnectorWithTopic(
+                        drawioObj = createConnectorWithTopic(
+                            mappingType(child),
                             topic,
-                            newId,
+                            child.id,
                             c4Name,
                             c4Type,
                             c4Description,
                             relStyle,
-                            parent,
-                            e,
+                            parentId,
+                            child,
                             entryExit,
                             fw
                         );
                     } else {
-                        let bendPoints = routeConnections ? handleBendPoints(e) : "";
-                        createConnector(
-                            newId,
+                        let bendPoints = routeConnections ? handleBendPoints(child) : "";
+                        drawioObj = createConnector(
+                            child.id,
                             c4Name,
                             c4Type,
                             c4Description,
                             relStyle,
-                            parent,
-                            e,
+                            parentId,
+                            child,
                             entryExit,
-                            bendPoints,
-                            fw
+                            bendPoints
                         );
                     }
                 } else {
-                    console.log("Not Found: " + e.id + "," + e.type + "\n");
                 }
             }
-            if (parentHasPort) {
-                diagramBoundaries = getDiagramBoundaries($(diagram));
-                console.log("bounds: " + JSON.stringify(getAbsBounds(e)));
-                boundaryLabelPosition = getBoundaryLabelPosition(diagramBoundaries, getAbsBounds(e), 100, 50);
+            portLabel = "";
 
-                const text = `<mxCell id="${e.id}-label" value="${
-                    portName || c4Name
-                }" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+            if (port) {
+                diagramBoundaries = getDiagramBoundaries($(diagram));
+                const labelWidth = 100;
+                const labelHeight = 50;
+                boundaryLabelPosition = getBoundaryLabelPosition(
+                    diagramBoundaries,
+                    getAbsBounds(bounds, child),
+                    labelWidth,
+                    labelHeight
+                );
+
+                portLabel = `<mxCell id="${child.id}-label" value="${
+                    portName(child, c4Name) || c4Name
+                }" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="${
+                    diagram.id
+                }">
                 <mxGeometry x="${boundaryLabelPosition.x}" y="${
                     boundaryLabelPosition.y
-                }" width="100" height="50" as="geometry" /></mxCell>
+                }" width="${labelWidth}" height="${labelHeight}" as="geometry" /></mxCell>
                 `;
-                fw.write(text);
             }
+            linkWrapper && fw.write(linkWrapper.groupObj);
+            fw.write(drawioObj);
+            linkWrapper && fw.write(linkWrapper.linkIconObj);
+            portLabel && fw.write(portLabel);
+
             // Recursively process children
-            mapElementsC4(fw, e, newId, diagram);
+            mapElementsC4(fw, child, diagram);
         });
+}
+
+function bounds4Port(diagramBoundaries, port) {
+    let newBounds = { x: 0, y: 0, width: 30, height: 30 };
+    portPosition = getPortPosition(diagramBoundaries, { width: newBounds.width, height: newBounds.height }, port);
+    newBounds.x = portPosition.x;
+    newBounds.y = portPosition.y;
+    console.log("port bounds", JSON.stringify(newBounds));
+    return newBounds;
 }
 
 module.exports = { mapElementsC4 };

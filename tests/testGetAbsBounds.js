@@ -23,13 +23,13 @@ describe("getAbsBounds", () => {
     it("returns the same bounds if there is no parent", () => {
         const element = makeElement(10, 20, 100, 200, []);
 
-        const result = getAbsBounds(element);
+        const result = getAbsBounds(element.bounds, element);
         expect(result).to.deep.equal({ x: 10, y: 20, width: 100, height: 200 });
     });
 
     it("accumulates multiple levels of parents", () => {
         const element = makeElement(1, 2, 10, 20, [makeElement(3, 4, 0, 0, []), makeElement(5, 6, 0, 0, [])]);
-        const result = getAbsBounds(element);
+        const result = getAbsBounds(element.bounds, element);
         expect(result).to.deep.equal({ x: 9, y: 12, width: 10, height: 20 });
     });
 
@@ -38,7 +38,7 @@ describe("getAbsBounds", () => {
             makeElement(3, 4, 0, 0, []),
             makeElement(undefined, undefined, 0, 0, []),
         ]);
-        const result = getAbsBounds(element);
+        const result = getAbsBounds(element.bounds, element);
         expect(result).to.deep.equal({ x: 4, y: 6, width: 10, height: 20 });
     });
 });

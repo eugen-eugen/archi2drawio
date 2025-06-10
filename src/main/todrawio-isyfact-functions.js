@@ -45,7 +45,7 @@ function setShapeColor(style, element) {
     return style;
 }
 
-function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent, e, entryExit, bendPoints, fw) {
+function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent, e, entryExit, bendPoints) {
     let label = c4RelLabel(c4Name, "", c4Description);
     let linkAttr = "";
     if (typeof e.prop === "function") {
@@ -70,7 +70,7 @@ function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent,
         ${newElem}
     </object>
 `;
-    fw.write(newObj);
+    return newObj;
 }
 
 function handleBendPoints(e) {
@@ -109,107 +109,6 @@ function getAbsoluteBendpoints(conn) {
         abps.push(abp);
     });
     return abps;
-}
-
-function createConnectorWithTopic(topic, newId, c4Name, c4Type, c4Description, relStyle, parent, e, entryExit, fw) {
-    // Determine the position for the Topic element
-    let topicId = newId + "_topic";
-    let topicLabel = topic;
-    let topicStyle =
-        "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FF9999;strokeColor=#A15F5F;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;textDirection=ltr;direction=south;";
-
-    // Get source and target coordinates
-    let src = e.source.bounds;
-    let tgt = e.target.bounds;
-
-    // Helper to get center of a bounds object
-    function center(b) {
-        return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
-    }
-
-    // Use getAbsoluteBendpoints to get bend points as JS objects
-    let bendArr = getAbsoluteBendpoints(e);
-
-    let topicX,
-        topicY,
-        bends1 = [],
-        bends2 = [];
-    if (bendArr.length > 0) {
-        // Use the middle bend point
-        let midIdx = Math.floor(bendArr.length / 2);
-        topicX = bendArr[midIdx].x;
-        topicY = bendArr[midIdx].y;
-        // Remove this point from the bend points for the two new connectors
-        bends1 = bendArr.slice(0, midIdx);
-        bends2 = bendArr.slice(midIdx + 1);
-    } else {
-        // No bend points: place topic in the middle between source and target
-        let c1 = center(src);
-        let c2 = center(tgt);
-        topicX = (c1.x + c2.x) / 2;
-        topicY = (c1.y + c2.y) / 2;
-        bends1 = [];
-        bends2 = [];
-    }
-
-    // Helper to convert bends array to XML
-    function bendsToXml(bends) {
-        if (!bends.length) return "";
-        let arr = bends.map((pt) => `<mxPoint x="${pt.x}" y="${pt.y}"/>`).join("");
-        return `<Array as="points">${arr}</Array>`;
-    }
-    var bendPoints1 = bendsToXml(bends1);
-    var bendPoints2 = bendsToXml(bends2);
-
-    // Create the Topic element
-    let topicElem = `   <object id="${topicId}" label="${topicLabel}">
-        <mxCell style="${topicStyle}" vertex="1" parent="${parent}">
-            <mxGeometry x="${topicX - 30}" y="${topicY - 30}" width="60 pt" height="35 pt" as="geometry" />
-        </mxCell>
-    </object>
-`;
-
-    fw.write(topicElem);
-
-    // Connector from source to Topic
-    let label1 = c4RelLabel(c4Name, "", c4Description);
-    let newElem1 = `<mxCell style="${
-        relStyle + (entryExit ? entryExit.exit : "")
-    }" edge="1" parent="${parent}" source="${e.source.id}" target="${topicId}">
-        <mxGeometry width="160" relative="1" as="geometry">
-        ${bendPoints1}
-        </mxGeometry>
-    </mxCell>
-`;
-    let newObj1 = `   <object id="${newId}_1" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label1}" placeholders="1" tooltip="${c4Tooltip(
-        c4Name,
-        c4Type,
-        c4Description
-    )}">
-        ${newElem1}
-    </object>
-`;
-    fw.write(newObj1);
-
-    // Connector from Topic to target
-    let label2 = c4RelLabel(c4Name, "", c4Description);
-    let newElem2 = `<mxCell style="${
-        relStyle + (entryExit ? entryExit.entry : "")
-    }" edge="1" parent="${parent}" source="${topicId}" target="${e.target.id}">
-        <mxGeometry width="160" relative="1" as="geometry">
-        ${bendPoints2}
-        </mxGeometry>
-    </mxCell>
-`;
-    let newObj2 = `   <object id="${newId}_2" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label2}" placeholders="1" tooltip="${c4Tooltip(
-        c4Name,
-        c4Type,
-        c4Description
-    )}">
-        ${newElem2}
-    </object>
-`;
-    fw.write(newObj2);
 }
 
 function c4ObjLabel(c4Name, c4Type, c4Description, fontColor) {
@@ -288,11 +187,11 @@ function effectiveFontColor(e) {
  * @param {object} e - The element with .bounds and optional .parent
  * @returns {{x: number, y: number, width: number, height: number}}
  */
-function getAbsBounds(e) {
-    let absX = (e.bounds && e.bounds.x) || 0;
-    let absY = (e.bounds && e.bounds.y) || 0;
-    let width = (e.bounds && e.bounds.width) || 0;
-    let height = (e.bounds && e.bounds.height) || 0;
+function getAbsBounds(bounds, e) {
+    let absX = (bounds && bounds.x) || 0;
+    let absY = (bounds && bounds.y) || 0;
+    let width = (bounds && bounds.width) || 0;
+    let height = (bounds && bounds.height) || 0;
     $(e)
         .parents()
         .each((current) => {
@@ -392,6 +291,56 @@ function getBoundaryLabelPosition(diagramBoundaries, anchorBounds, labelWidth, l
 
     return { x: labelX, y: labelY };
 }
+function getPortPosition(diagramBoundaries, newSize, element) {
+    const { topLeft, bottomRight } = diagramBoundaries;
+    const elementAbs = getAbsBounds(element.bounds, element);
+    console.log("element abs:", JSON.stringify(elementAbs));
+    // Center of port
+    const portCenterX = elementAbs.x + elementAbs.width / 2;
+    const portCenterY = elementAbs.y + elementAbs.height / 2;
+
+    // Distances to each boundary (absolute values)
+    const distTop = Math.abs(portCenterY - topLeft.y);
+    const distBottom = Math.abs(bottomRight.y - portCenterY);
+    const distLeft = Math.abs(portCenterX - topLeft.x);
+    const distRight = Math.abs(bottomRight.x - portCenterX);
+
+    // Find the minimum distance
+    const minDist = Math.min(distTop, distBottom, distLeft, distRight);
+    console.log(element, distTop, distBottom, distLeft, distRight);
+
+    let dX = (dY = 0);
+    if (minDist === distTop) {
+        // Place port so its center is on the top boundary
+        dY = elementAbs.y - (topLeft.y - elementAbs.height / 2);
+    } else if (minDist === distBottom) {
+        // Place port so its center is on the bottom boundary
+        dY = elementAbs.y - (bottomRight.y - elementAbs.height / 2);
+    } else if (minDist === distLeft) {
+        // Place port so its center is on the left boundary
+        dX = elementAbs.x + elementAbs.width / 2 - topLeft.x;
+    } else {
+        // Place port so its center is on the right boundary
+        dX = elementAbs.x - (bottomRight.x - elementAbs.width / 2);
+    }
+
+    return {
+        x: element.bounds.x - dX + (elementAbs.width - newSize.width) / 2,
+        y: element.bounds.y - dY + (elementAbs.height - newSize.height) / 2,
+    };
+}
+
+function portName(child, c4Name) {
+    let parentElements = $(child).parent();
+    parentElements.each(function (p) {
+        port = undefined;
+        if (typeof p.prop === "function" && p.prop().includes("port")) {
+            port = p.prop("port") || c4Name;
+            return false; // Break the loop
+        }
+    });
+    return port;
+}
 
 module.exports = {
     addFontSizeToStyle,
@@ -400,7 +349,6 @@ module.exports = {
     createConnector,
     handleBendPoints,
     getAbsoluteBendpoints,
-    createConnectorWithTopic,
     c4ObjLabel,
     c4RelLabel,
     c4Tooltip,
@@ -410,5 +358,7 @@ module.exports = {
     unEscX,
     getDiagramBoundaries,
     getBoundaryLabelPosition,
+    getPortPosition,
     getAbsBounds,
+    portName,
 };

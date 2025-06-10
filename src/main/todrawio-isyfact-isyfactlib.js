@@ -1,11 +1,11 @@
 const p = require("fast-xml-parser");
-xmlParser = new p.XMLParser({
+const xmlParser = new p.XMLParser({
     ignoreAttributes: false,
     processEntities: true,
     attributeNamePrefix: "",
 });
 
-xmlBuilder = new p.XMLBuilder({
+const xmlBuilder = new p.XMLBuilder({
     arrayNodeName: "mxCell",
     attributesGroupName: false,
     ignoreAttributes: false,
@@ -25,26 +25,34 @@ function getMxCells(obj) {
         throw new Error("Unsupported JSON structure for mxCell operations");
     }
 }
-function readDrawioLibraryJson(filePath) {
-    let drawioLibXml;
-    try {
-        drawioLibXml = require("../../data/IsyFact.drawiolib.xml");
-    } catch (e) {
-        console.log("Using fallback for drawio library XML:", e.message);
-        // Fallback for dev mode
-        const fs = require("fs");
-        const path = require("path");
-        drawioLibXml = fs.readFileSync(path.join(__dirname, "../../data/IsyFact.drawiolib.xml"), "utf8");
+let mergedLibs = [];
+function readDrawioLibraryJson() {
+    if (mergedLibs.length === 0) {
+        let libs = [];
+        try {
+            libs = [require("../../data/IsyFact.drawiolib.xml"), require("../../data/c4.drawiolib.xml")];
+        } catch (e) {
+            // Fallback for dev mode
+            const fs = require("fs");
+            const path = require("path");
+            libs = [
+                fs.readFileSync(path.join(__dirname, "../../data/IsyFact.drawiolib.xml"), "utf8"),
+                fs.readFileSync(path.join(__dirname, "../../data/c4.drawiolib.xml"), "utf8"),
+            ];
+        }
+        libs.forEach((drawioLibXml) => {
+            let sb = drawioLibXml;
+            // Extract content between <mxlibrary> and </mxlibrary>
+            var match = sb.match(/<mxlibrary>([\s\S]*?)<\/mxlibrary>/);
+            if (!match) {
+                throw new Error("No <mxlibrary>...</mxlibrary> section found in " + pathname);
+            }
+            var jsonText = match[1].trim();
+            // Parse the JSON content
+            mergedLibs = mergedLibs.concat(JSON.parse(jsonText));
+        });
     }
-    sb = drawioLibXml;
-    // Extract content between <mxlibrary> and </mxlibrary>
-    var match = sb.match(/<mxlibrary>([\s\S]*?)<\/mxlibrary>/);
-    if (!match) {
-        throw new Error("No <mxlibrary>...</mxlibrary> section found.");
-    }
-    var jsonText = match[1].trim();
-    // Parse the JSON content
-    return JSON.parse(jsonText);
+    return mergedLibs;
 }
 
 function getGraphObject(lib, title) {
@@ -59,7 +67,11 @@ function getGraphObject(lib, title) {
             return obj;
         }
     }
-    return null; // Not found
+    return {
+        title,
+        xml: `&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="${title}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;`,
+        mxCell: `&lt;mxCell id="2" value="${title}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;`,
+    };
 }
 
 function adjustIds2(jsonObj, parentId, elementId) {
@@ -74,7 +86,7 @@ function adjustIds2(jsonObj, parentId, elementId) {
     } else if (Array.isArray(obj.mxCell)) {
         cells = obj.mxCell;
     } else {
-        throw new Error("Unsupported JSON structure for adjustIds2");
+        throw new Error("Unsupported JSON structure for adjustIds2 " + JSON.stringify(obj));
     }
 
     // 2. Build a map for easy lookup
@@ -221,6 +233,30 @@ function sizing2(jsonObj, width, height, parentId) {
     return obj;
 } // Add this at the end of the file to export all functions
 
+function coloring2(jsonObj, fillColor, fontColor, opacity) {
+    let obj = deepClone(jsonObj);
+    let cells = getMxCells(obj);
+
+    cells.forEach((cell) => {
+        if (typeof cell.style === "string" && /fillColor=[^;]*;?/.test(cell.style)) {
+            // Remove any existing fillColor, fontColor, and opacity
+            let style = cell.style
+                .replace(/fillColor=[^;]*;?/g, "")
+                .replace(/fontColor=[^;]*;?/g, "")
+                .replace(/opacity=[^;]*;?/g, "");
+            // Add new fillColor and fontColor at the end
+            style += `fillColor=${fillColor};fontColor=${fontColor};`;
+            // Add opacity if provided
+            if (opacity !== undefined && opacity !== null && opacity !== false) {
+                style += `opacity=${opacity};`;
+            }
+            cell.style = style;
+        }
+    });
+
+    return obj;
+}
+
 module.exports = {
     readDrawioLibraryJson,
     getGraphObject,
@@ -228,4 +264,7 @@ module.exports = {
     positioning2,
     naming2,
     sizing2,
+    coloring2,
+    xmlBuilder,
+    xmlParser,
 };

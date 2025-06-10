@@ -86,15 +86,15 @@ if (theView) {
         var fw = new OutputStreamWriter(new FileOutputStream(fileName, false));
         const header = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="" modified="${timeISOString}" agent="Archi" etag="${model.name}" type="device">
-    <diagram id="${theView.id}" name="${escX(theView.name)}">
+    <diagram id="root-id" name="${escX(theView.name)}">
         <mxGraphModel dx="2302" dy="697" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0" />
-                <mxCell id="1" parent="0" />
+                <mxCell id="${theView.id}" parent="0" />
 `;
         fw.write(header);
 
-        mapElementsC4(fw, theView, "1", theView);
+        mapElementsC4(fw, theView, theView);
 
         var footer = `			</root>
         </mxGraphModel>
