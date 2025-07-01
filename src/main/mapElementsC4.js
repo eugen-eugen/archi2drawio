@@ -129,6 +129,7 @@ function mappingType(e) {
     $(e)
         .parents()
         .each((p) => {
+            console.log("parent: ", p);
             const newLocal = p.prop("mappingType", true);
             newLocal && types.add(...newLocal);
         });
@@ -204,13 +205,14 @@ function mapElementsC4(fw, element, diagram) {
             } else {
                 //*** Map relationships ***
                 let relStyle = c4RelMap.get(archiType) || c4RelMap.get("default");
+                console.log("archiType: ", archiType);
                 if (typeof relStyle !== "undefined") {
                     let entryExit = routeConnections ? handleEntryExit(child) : null;
                     // Check for "topic" property
                     let topic = typeof child.prop === "function" && child.prop("topic") && child.prop("topic").trim();
                     if (topic) {
                         drawioObj = createConnectorWithTopic(
-                            mappingType(child),
+                            mappingType(child.source),
                             topic,
                             child.id,
                             c4Name,
@@ -277,7 +279,6 @@ function bounds4Port(diagramBoundaries, port) {
     portPosition = getPortPosition(diagramBoundaries, { width: newBounds.width, height: newBounds.height }, port);
     newBounds.x = portPosition.x;
     newBounds.y = portPosition.y;
-    console.log("port bounds", JSON.stringify(newBounds));
     return newBounds;
 }
 

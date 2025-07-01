@@ -17,6 +17,10 @@ const c4SolidRelStyle =
     "endArrow=blockThin;html=1;fontColor=#404040;strokeWidth=2;endFill=1;strokeColor=#828282;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;align=right;exitPerimeter=0;elbow=vertical;";
 const c4DashedRelStyle =
     "endArrow=blockThin;html=1;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;dashed=1;dashPattern=8 8;";
+const c4DashedRelStartArrowStyle =
+    "endArrow=none;startArrow=blockThin;html=1;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;dashed=1;dashPattern=8 8;";
+const c4DashedRelStartEndArrowStyle =
+    "endArrow=blockThin;startArrow=blockThin;html=1;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;dashed=1;dashPattern=8 8;";
 const c4SolidNondirectedRelStyle =
     "endArrow=none;html=1;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0";
 
@@ -116,6 +120,9 @@ const c4RelMap = new Map([
     ["triggering-relationship", c4SolidRelStyle],
     ["flow-relationship", c4DashedRelStyle],
     ["access-relationship", c4SolidRelStyle],
+    ["access-relationship_read", c4DashedRelStartArrowStyle],
+    ["access-relationship_write", c4DashedRelStyle],
+    ["access-relationship_readwrite", c4DashedRelStartEndArrowStyle],
     // ["composition-relationship", "endArrow=diamondThin;html=1;startFill=1;"],
     // ["aggregation-relationship", "endArrow=diamondThin;html=1;startFill=0;"],
     ["specialization-relationship", c4SolidRelStyle],

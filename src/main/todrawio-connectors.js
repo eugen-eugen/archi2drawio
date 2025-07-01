@@ -19,8 +19,9 @@ const {
 
 // Helper: constructTopicStyle
 function constructTopicStyle(mappingType) {
+    console.log("mapping " + mappingType);
     const defaultStyle = {
-        xml: `&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="Topic" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;rotation=90;fillColor=#FF9999;strokeColor=#A15F5F;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;textDirection=ltr;direction=south;" vertex="1" parent="1"&gt;&lt;mxGeometry width="60" height="35" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;`,
+        xml: `&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="Topic" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FF9999;strokeColor=#A15F5F;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;textDirection=ltr;direction=south;" vertex="1" parent="1"&gt;&lt;mxGeometry width="60" height="35" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;`,
         w: 60,
         h: 35,
         aspect: "fixed",
@@ -130,7 +131,7 @@ function createConnectorWithTopic(
     let label1 = c4RelLabel(c4Name, "", c4Description);
     let newElem1 = `<mxCell style="${
         relStyle + (entryExit ? entryExit.exit : "")
-    }" edge="1" parent="${parent}" source="${e.source.id}" target="${topicId}-1">
+    }" edge="1" parent="${parent}" source="${e.source.id}" target="${topicId}">
         <mxGeometry width="160" relative="1" as="geometry">
         ${bendPoints1}
         </mxGeometry>
@@ -149,7 +150,7 @@ function createConnectorWithTopic(
     let label2 = c4RelLabel(c4Name, "", c4Description);
     let newElem2 = `<mxCell style="${
         relStyle + (entryExit ? entryExit.entry : "")
-    }" edge="1" parent="${parent}" source="${topicId}-1" target="${e.target.id}">
+    }" edge="1" parent="${parent}" source="${topicId}" target="${e.target.id}">
         <mxGeometry width="160" relative="1" as="geometry">
         ${bendPoints2}
         </mxGeometry>
