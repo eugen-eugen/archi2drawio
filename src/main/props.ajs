@@ -1,0 +1,8 @@
+// Print all properties of the selected Archi object in Archi's scripting environment (ajs)
+var selected = $(selection).first();
+if (!selected) {
+    console.log("No object selected.");
+} else {
+    console.log("Properties of selected object (" + selected + ")");
+    console.log("fontColor: " + selected.fontColor);
+}
