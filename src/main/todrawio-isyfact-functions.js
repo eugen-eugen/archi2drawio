@@ -155,30 +155,20 @@ function unEscX(xml) {
         .replace(/&amp;/g, "&");
 }
 
-const colorFactory = () => Java.type("com.archimatetool.editor.ui.ColorFactory");
-
 function effectiveFillColor(e) {
     if (e.fillColor) {
         return e.fillColor;
     }
-    var method = e.class.getDeclaredMethod("getEObject");
-    method.setAccessible(true);
-    eObject = method.invoke(e);
-    color = colorFactory().getDefaultFillColor(eObject); // get the color
-
-    return colorFactory().convertColorToString(color);
+    // Use a hardcoded default color if not set
+    return "#cccccc";
 }
 
 function effectiveFontColor(e) {
     if (e.fontColor) {
         return e.fontColor;
     }
-    var method = e.class.getDeclaredMethod("getEObject");
-    method.setAccessible(true);
-    var eObject = method.invoke(e);
-    var color = colorFactory().getDefaultFontColor(eObject); // get the font color
-
-    return colorFactory().convertColorToString(color);
+    // Use a hardcoded default font color
+    return "#404040";
 }
 
 /**
