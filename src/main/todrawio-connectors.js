@@ -1,11 +1,4 @@
-const {
-    escX,
-    c4RelLabel,
-    c4Tooltip,
-    getAbsoluteBendpoints,
-    getAbsBounds,
-    unEscX,
-} = require("./todrawio-isyfact-functions.js");
+const { escX, c4RelLabel, c4Tooltip, getAbsoluteBendpoints, unEscX } = require("./todrawio-isyfact-functions.js");
 const {
     readDrawioLibraryJson,
     getGraphObject,
@@ -69,46 +62,24 @@ function createConnectorWithTopic(
     relStyle,
     parent,
     e,
-    entryExit
+    entryExit,
 ) {
     // Determine the position for the Topic element
     let topicId = newId + "_topic";
     let topicLabel = topic;
     let topicStyle = constructTopicStyle(mappingType);
 
-    // Get source and target coordinates
-    let src = getAbsBounds(e.source.bounds, e.source);
-    let tgt = getAbsBounds(e.target.bounds, e.target);
-
-    // Helper to get center of a bounds object
-    function center(b) {
-        return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
-    }
-
     // Use getAbsoluteBendpoints to get bend points as JS objects
+    // (always returns at least one point — the mostCommonPoint virtual bendpoint)
     let bendArr = getAbsoluteBendpoints(e);
 
-    let topicX,
-        topicY,
-        bends1 = [],
-        bends2 = [];
-    if (bendArr.length > 0) {
-        // Use the middle bend point
-        let midIdx = Math.floor(bendArr.length / 2);
-        topicX = bendArr[midIdx].x;
-        topicY = bendArr[midIdx].y;
-        // Remove this point from the bend points for the two new connectors
-        bends1 = bendArr.slice(0, midIdx);
-        bends2 = bendArr.slice(midIdx + 1);
-    } else {
-        // No bend points: place topic in the middle between source and target
-        let c1 = center(src);
-        let c2 = center(tgt);
-        topicX = (c1.x + c2.x) / 2;
-        topicY = (c1.y + c2.y) / 2;
-        bends1 = [];
-        bends2 = [];
-    }
+    // Use the middle bend point for the Topic position
+    let midIdx = Math.floor(bendArr.length / 2);
+    let topicX = bendArr[midIdx].x;
+    let topicY = bendArr[midIdx].y;
+    // Split bend points for the two new connectors
+    let bends1 = bendArr.slice(0, midIdx);
+    let bends2 = bendArr.slice(midIdx + 1);
 
     // Helper to convert bends array to XML
     function bendsToXml(bends) {
@@ -140,7 +111,7 @@ function createConnectorWithTopic(
     let newObj1 = `   <object id="${newId}_1" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label1}" placeholders="1" tooltip="${c4Tooltip(
         c4Name,
         c4Type,
-        c4Description
+        c4Description,
     )}">
         ${newElem1}
     </object>
@@ -159,7 +130,7 @@ function createConnectorWithTopic(
     let newObj2 = `   <object id="${newId}_2" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label2}" placeholders="1" tooltip="${c4Tooltip(
         c4Name,
         c4Type,
-        c4Description
+        c4Description,
     )}">
         ${newElem2}
     </object>

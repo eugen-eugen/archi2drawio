@@ -65,7 +65,7 @@ function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent,
     let newObj = `				<object id="${newId}" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label}" placeholders="1" tooltip="${c4Tooltip(
         c4Name,
         c4Type,
-        c4Description
+        c4Description,
     )}"${linkAttr}>
         ${newElem}
     </object>
@@ -75,35 +75,54 @@ function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent,
 
 function handleBendPoints(e) {
     var xml = "";
-    if (e.getRelativeBendpoints() != null) {
-        xml += '<Array as="points">\n';
-        var bps = getAbsoluteBendpoints(e);
-        for (let p = 0; p < bps.length; p++) {
-            xml += '<mxPoint x="' + bps[p].x + '" y="' + bps[p].y + '" />\n';
-        }
-        xml += "</Array>\n";
+    xml += '<Array as="points">\n';
+    var bps = getAbsoluteBendpoints(e);
+    for (let p = 0; p < bps.length; p++) {
+        xml += '<mxPoint x="' + bps[p].x + '" y="' + bps[p].y + '" />\n';
     }
+    xml += "</Array>\n";
     return xml;
+}
+
+function mostCommonPoint(bound1, bound2) {
+    let xs = [bound1.x, bound1.x + bound1.width, bound2.x, bound2.x + bound2.width].sort((a, b) => a - b);
+    let ys = [bound1.y, bound1.y + bound1.height, bound2.y, bound2.y + bound2.height].sort((a, b) => a - b);
+    return {
+        x: (xs[1] + xs[2]) / 2,
+        y: (ys[1] + ys[2]) / 2,
+    };
 }
 
 function getAbsoluteBendpoints(conn) {
     let abps = [];
-    conn.getRelativeBendpoints().forEach((bp) => {
-        let x = bp.startX + conn.source.bounds.x + conn.source.bounds.width / 2;
-        let y = bp.startY + conn.source.bounds.y + conn.source.bounds.height / 2;
-        // add x/y offset of the embedding objects
-        $(conn.source)
-            .parents()
-            .forEach((p) => {
-                try {
-                    x += p.bounds.x;
-                    y += p.bounds.y;
-                } catch (e) {}
-            });
+    let bendpoints = Java.from(conn.getRelativeBendpoints());
+    let totalBendpoints = bendpoints.length;
+
+    let sb = getAbsBounds(conn.source.bounds, conn.source);
+    let tb = getAbsBounds(conn.target.bounds, conn.target);
+
+    if (totalBendpoints === 0) {
+        abps.push(mostCommonPoint(sb, tb));
+        return abps;
+    }
+
+    let sourceCenterX = sb.x + sb.width / 2;
+    let sourceCenterY = sb.y + sb.height / 2;
+    let targetCenterX = tb.x + tb.width / 2;
+    let targetCenterY = tb.y + tb.height / 2;
+
+    bendpoints.forEach((bp, index) => {
+        let weight = (index + 1) / (totalBendpoints + 1);
+
+        let sourceX = (sourceCenterX + bp.startX) * (1 - weight);
+        let sourceY = (sourceCenterY + bp.startY) * (1 - weight);
+
+        let targetX = (targetCenterX + bp.endX) * weight;
+        let targetY = (targetCenterY + bp.endY) * weight;
 
         let abp = {
-            x: x,
-            y: y,
+            x: Math.round(sourceX + targetX),
+            y: Math.round(sourceY + targetY),
         };
 
         abps.push(abp);
@@ -339,6 +358,7 @@ module.exports = {
     createConnector,
     handleBendPoints,
     getAbsoluteBendpoints,
+    mostCommonPoint,
     c4ObjLabel,
     c4RelLabel,
     c4Tooltip,

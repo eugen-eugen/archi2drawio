@@ -40,11 +40,7 @@ function getAbsCoords(e) {
 
 function handleEntryExit(e) {
     let result = { exit: "", entry: "" };
-    if (
-        e.getRelativeBendpoints().length > 0 &&
-        typeof e.source.bounds !== "undefined" &&
-        typeof e.target.bounds != "undefined"
-    ) {
+    if (typeof e.source.bounds !== "undefined" && typeof e.target.bounds != "undefined") {
         let bps = getAbsoluteBendpoints(e);
 
         let s = getAbsCoords(e.source);
@@ -140,7 +136,7 @@ function mappingType(e) {
         return Array.from(types)[0];
     } else {
         throw new Error(
-            "Conflicting mappingType values found in ancestors: (" + types.size + ")" + Array.from(types).join(", ")
+            "Conflicting mappingType values found in ancestors: (" + types.size + ")" + Array.from(types).join(", "),
         );
     }
 }
@@ -151,7 +147,7 @@ function mapElementsC4(fw, element, diagram) {
             parentId = element.id;
 
             let c4Name = escX(
-                child.label && child.label.trim() !== "" ? child.label : child.text ? child.text : child.name || ""
+                child.label && child.label.trim() !== "" ? child.label : child.text ? child.text : child.name || "",
             );
             let c4Description = escX(child.documentation || "");
             let archiType = handleType(child);
@@ -222,7 +218,7 @@ function mapElementsC4(fw, element, diagram) {
                             parentId,
                             child,
                             entryExit,
-                            fw
+                            fw,
                         );
                     } else {
                         let bendPoints = routeConnections ? handleBendPoints(child) : "";
@@ -235,7 +231,7 @@ function mapElementsC4(fw, element, diagram) {
                             parentId,
                             child,
                             entryExit,
-                            bendPoints
+                            bendPoints,
                         );
                     }
                 } else {
@@ -251,7 +247,7 @@ function mapElementsC4(fw, element, diagram) {
                     diagramBoundaries,
                     getAbsBounds(bounds, child),
                     labelWidth,
-                    labelHeight
+                    labelHeight,
                 );
 
                 portLabel = `<mxCell id="${child.id}-label" value="${
