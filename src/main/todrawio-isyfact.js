@@ -19,6 +19,8 @@ const { c4ElemMap } = require("./constants.js");
 
 const { buildDiagramXml } = require("./todrawio-isyfact-diagram.js");
 
+const { getParameter } = require("./params.js");
+
 const useAlternativeShapes = false; //if true the script will be sensible to alternative shapes defined. Otherwise it will use the default shape.
 
 //*****************************************************************************
@@ -78,15 +80,16 @@ if (theViews.size() === 0) {
 }
 
 if (theViews.size() > 0) {
-    const defaultFileName = theViews.size() === 1
-        ? `${model.name}_${theViews.first().name}_C4`
-        : model.name;
+    const defaultFileName = theViews.size() === 1 ? `${model.name}_${theViews.first().name}_C4` : model.name;
 
-    const fileName = window.promptSaveFile({
-        title: `Draw.io filename for ${theViews.size()} view(s)`,
-        filterExtensions: ["*.drawio"],
-        fileName: defaultFileName,
-    });
+    const paramFile = getParameter("drawioOutputFile");
+    const fileName =
+        paramFile ||
+        window.promptSaveFile({
+            title: `Draw.io filename for ${theViews.size()} view(s)`,
+            filterExtensions: ["*.drawio"],
+            fileName: defaultFileName,
+        });
 
     if (fileName) {
         const date = new Date();
