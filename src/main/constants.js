@@ -14,7 +14,7 @@ const c4PersonStyle =
 const c4SystemScopeBoundary =
     "rounded=1;whiteSpace=wrap;html=1;dashed=1;arcSize=20;fillColor=#dae8fc;strokeColor=#6c8ebf;labelBackgroundColor=none;align=left;verticalAlign=bottom;labelBorderColor=none;spacingTop=0;spacing=10;dashPattern=8 4;metaEdit=1;rotatable=0;perimeter=rectanglePerimeter;labelPadding=0;allowArrows=0;connectable=0;expand=0;recursiveResize=0;editable=1;pointerEvents=0;absoluteArcSize=1;points=[[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0.25,0],[1,0.5,0],[1,0.75,0],[0.75,1,0],[0.5,1,0],[0.25,1,0],[0,0.75,0],[0,0.5,0],[0,0.25,0]];strokeWidth=3;fontColor=#004C99;";
 const c4SolidRelStyle =
-    "endArrow=blockThin;html=1;fontColor=#404040;strokeWidth=2;endFill=1;strokeColor=#828282;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;align=right;exitPerimeter=0;elbow=vertical;";
+    "endArrow=blockThin;html=1;fontColor=#404040;strokeWidth=2;endFill=1;strokeColor=#828282;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;align=center;exitPerimeter=0;elbow=vertical;";
 const c4DashedRelStyle =
     "endArrow=blockThin;html=1;fontColor=#404040;strokeWidth=1;endFill=1;strokeColor=#828282;elbow=vertical;metaEdit=1;endSize=14;startSize=14;jumpStyle=arc;jumpSize=16;rounded=0;dashed=1;dashPattern=8 8;";
 const c4DashedRelStartArrowStyle =

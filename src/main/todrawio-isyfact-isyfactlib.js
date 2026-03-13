@@ -69,8 +69,8 @@ function getGraphObject(lib, title) {
     }
     return {
         title,
-        xml: `&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="${title}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;`,
-        mxCell: `&lt;mxCell id="2" value="${title}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;`,
+        xml: `&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" value="${title}" style="metaEdit=1;rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;`,
+        mxCell: `&lt;mxCell id="2" value="${title}" style="metaEdit=1;rounded=1;whiteSpace=wrap;html=1;fillColor=#cccccc;strokeColor=#000000;" vertex="1" parent="1"&gt;&lt;mxGeometry width="120" height="60" as="geometry"/&gt;&lt;/mxCell&gt;`,
     };
 }
 
@@ -170,7 +170,7 @@ function naming2(dom, name) {
                 cell.value = cell.value.replace(/(<b>)[^<]*(<\/b>)/, `$1${name}$2`);
             } else if (plainTextRegex.test(cell.value)) {
                 // If value is plain text, replace it entirely
-                cell.value = name;
+                cell.value = '<span style="overflow-wrap: anywhere; font-size: 11px">' + name + "</span>";
             }
         }
     });

@@ -45,7 +45,18 @@ function setShapeColor(style, element) {
     return style;
 }
 
-function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent, e, entryExit, bendPoints) {
+function createConnector(
+    newId,
+    c4Name,
+    c4Type,
+    c4Description,
+    relStyle,
+    parent,
+    e,
+    entryExit,
+    bendPoints,
+    labelPosition,
+) {
     let label = c4RelLabel(c4Name, "", c4Description);
     let linkAttr = "";
     if (typeof e.prop === "function") {
@@ -54,10 +65,12 @@ function createConnector(newId, c4Name, c4Type, c4Description, relStyle, parent,
             linkAttr = ` link="${escX(linkValue)}"`;
         }
     }
+    let labelPosAttr = labelPosition ? ` x="${labelPosition.x}" y="${labelPosition.y}"` : "";
+    console.log("The textposition :", e.textPosition);
     let newElem = `<mxCell style="${
         relStyle + (entryExit ? entryExit.exit + entryExit.entry : "")
     }" edge="1" parent="${parent}" source="${e.source.id}" target="${e.target.id}">
-        <mxGeometry width="160" relative="1" as="geometry">
+        <mxGeometry${labelPosAttr} width="160" relative="1" as="geometry">
         ${bendPoints}
         </mxGeometry>
     </mxCell>
@@ -163,7 +176,8 @@ function escX(s) {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
+        .replace(/'/g, "&apos;")
+        .replace(/\n/g, "&#10;");
 }
 function unEscX(xml) {
     return xml
@@ -171,6 +185,7 @@ function unEscX(xml) {
         .replace(/&gt;/g, ">")
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'")
+        .replace(/&#10;/g, "\n")
         .replace(/&amp;/g, "&");
 }
 
@@ -339,6 +354,64 @@ function getPortPosition(diagramBoundaries, newSize, element) {
     };
 }
 
+function getAbsoluteLabelPosition(conn) {
+    if (conn.textPosition === 0) {
+        return { x: -0.9, y: 0 };
+    }
+    if (conn.textPosition === 2) {
+        return { x: 0.9, y: 0 };
+    }
+
+    let absBendPoints = getAbsoluteBendpoints(conn);
+
+    let sb = getAbsBounds(conn.source.bounds, conn.source);
+    let tb = getAbsBounds(conn.target.bounds, conn.target);
+    let bps = absBendPoints;
+
+    function clamp(val, min, max) {
+        return val <= min ? 0 : val >= max ? 1 : (val - min) / (max - min);
+    }
+
+    let exitX = clamp(bps[0].x, sb.x, sb.x + sb.width);
+    let exitY = clamp(bps[0].y, sb.y, sb.y + sb.height);
+    let last = bps[bps.length - 1];
+    let entryX = clamp(last.x, tb.x, tb.x + tb.width);
+    let entryY = clamp(last.y, tb.y, tb.y + tb.height);
+
+    let sourcePoint = { x: sb.x + exitX * sb.width, y: sb.y + exitY * sb.height };
+    let targetPoint = { x: tb.x + entryX * tb.width, y: tb.y + entryY * tb.height };
+
+    let n = absBendPoints.length;
+    let labelIndex;
+
+    if (n % 2 === 1) {
+        labelIndex = Math.floor(n / 2);
+    } else {
+        labelIndex = n / 2 - 0.5;
+    }
+
+    let path = [sourcePoint, ...absBendPoints, targetPoint];
+    let distances = [0];
+    for (let i = 1; i < path.length; i++) {
+        let dx = path[i].x - path[i - 1].x;
+        let dy = path[i].y - path[i - 1].y;
+        distances.push(distances[i - 1] + Math.sqrt(dx * dx + dy * dy));
+    }
+    let totalLength = distances[distances.length - 1];
+
+    let labelDist;
+    if (Number.isInteger(labelIndex)) {
+        labelDist = distances[labelIndex + 1];
+    } else {
+        let i1 = Math.floor(labelIndex);
+        let i2 = Math.ceil(labelIndex);
+        labelDist = (distances[i1 + 1] + distances[i2 + 1]) / 2;
+    }
+
+    let ratio = totalLength > 0 ? labelDist / totalLength : 0.5;
+    return { x: (ratio - 0.5) * 2, y: 0 };
+}
+
 function portName(child, c4Name) {
     let parentElements = $(child).parent();
     parentElements.each(function (p) {
@@ -370,5 +443,6 @@ module.exports = {
     getBoundaryLabelPosition,
     getPortPosition,
     getAbsBounds,
+    getAbsoluteLabelPosition,
     portName,
 };

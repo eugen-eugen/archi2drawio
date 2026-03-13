@@ -10,6 +10,7 @@ const {
     getBoundaryLabelPosition,
     getPortPosition,
     getAbsBounds,
+    getAbsoluteLabelPosition,
     portName,
 } = require("./todrawio-isyfact-functions.js");
 
@@ -39,7 +40,7 @@ function getAbsCoords(e) {
 }
 
 function handleEntryExit(e) {
-    let result = { exit: "", entry: "" };
+    let result = { exit: "", entry: "", coordinates: { exit: { x: 0, y: 0 }, entry: { x: 0, y: 0 } } };
     if (typeof e.source.bounds !== "undefined" && typeof e.target.bounds != "undefined") {
         let bps = getAbsoluteBendpoints(e);
 
@@ -80,6 +81,10 @@ function handleEntryExit(e) {
 
         result.exit = `exitX=${exitX};exitY=${exitY};`;
         result.entry = `entryX=${entryX};entryY=${entryY};`;
+        result.coordinates = {
+            exit: { x: s.x + exitX * s.w, y: s.y + exitY * s.h },
+            entry: { x: t.x + entryX * t.w, y: t.y + entryY * t.h },
+        };
     }
     return result;
 }
@@ -145,9 +150,12 @@ function mapElementsC4(fw, element, diagram) {
         .children()
         .each(function (child) {
             parentId = element.id;
-
             let c4Name = escX(
-                child.label && child.label.trim() !== "" ? child.label : child.text ? child.text : child.name || "",
+                child.labelValue && child.labelValue.trim() !== ""
+                    ? child.labelValue
+                    : child.text
+                      ? child.text
+                      : child.name || "",
             );
             let c4Description = escX(child.documentation || "");
             let archiType = handleType(child);
@@ -222,6 +230,7 @@ function mapElementsC4(fw, element, diagram) {
                         );
                     } else {
                         let bendPoints = routeConnections ? handleBendPoints(child) : "";
+                        let labelPosition = routeConnections ? getAbsoluteLabelPosition(child) : { x: 0, y: 0 };
                         drawioObj = createConnector(
                             child.id,
                             c4Name,
@@ -232,6 +241,7 @@ function mapElementsC4(fw, element, diagram) {
                             child,
                             entryExit,
                             bendPoints,
+                            labelPosition,
                         );
                     }
                 } else {

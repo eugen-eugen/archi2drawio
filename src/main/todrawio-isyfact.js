@@ -17,7 +17,7 @@ const { readDrawioLibraryJson } = require("./todrawio-isyfact-isyfactlib.js");
 
 const { c4ElemMap } = require("./constants.js");
 
-const { mapElementsC4 } = require("./mapElementsC4.js");
+const { buildDiagramXml } = require("./todrawio-isyfact-diagram.js");
 
 const useAlternativeShapes = false; //if true the script will be sensible to alternative shapes defined. Otherwise it will use the default shape.
 
@@ -69,13 +69,23 @@ var OutputStreamWriter = Java.type("java.io.OutputStreamWriter");
 var FileOutputStream = Java.type("java.io.FileOutputStream");
 var StandardCharsets = Java.type("java.nio.charset.StandardCharsets");
 
-var theView = $(selection).filter("archimate-diagram-model").first();
+var theViews = $(selection).filter("archimate-diagram-model");
 
-if (theView) {
+if (theViews.size() === 0) {
+    theViews = $("archimate-diagram-model").filter(function (v) {
+        return typeof v.prop === "function" && v.prop("Drawio:View:Tag") === "publish";
+    });
+}
+
+if (theViews.size() > 0) {
+    const defaultFileName = theViews.size() === 1
+        ? `${model.name}_${theViews.first().name}_C4`
+        : model.name;
+
     const fileName = window.promptSaveFile({
-        title: `Draw.io filename for view ${theView.name}`,
+        title: `Draw.io filename for ${theViews.size()} view(s)`,
         filterExtensions: ["*.drawio"],
-        fileName: `${model.name}_${theView.name}_C4`,
+        fileName: defaultFileName,
     });
 
     if (fileName) {
@@ -86,24 +96,18 @@ if (theView) {
         var fw = new OutputStreamWriter(new FileOutputStream(fileName, false));
         const header = `<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="" modified="${timeISOString}" agent="Archi" etag="${model.name}" type="device">
-    <diagram id="root-id" name="${escX(theView.name)}">
-        <mxGraphModel dx="2302" dy="697" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
-            <root>
-                <mxCell id="0" />
-                <mxCell id="${theView.id}" parent="0" />
 `;
         fw.write(header);
 
-        mapElementsC4(fw, theView, theView);
+        theViews.each(function (view) {
+            buildDiagramXml(fw, view);
+        });
 
-        var footer = `			</root>
-        </mxGraphModel>
-    </diagram>
-</mxfile>
+        var footer = `</mxfile>
 `;
         fw.write(footer);
         fw.close();
-        console.log("Done exporting view to draw.io (C4 shapes)");
+        console.log(`Done exporting ${theViews.size()} view(s) to draw.io (C4 shapes)`);
     }
 } else {
     console.log("No view selected");

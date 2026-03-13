@@ -54,7 +54,7 @@ function createC4Element(newId, c4Name, c4Type, c4Description, parent, element, 
     var mainObj = `			<object id="${newId}" c4Name="${c4Name}" c4Description="${c4Description}" c4Type="${c4Type}" label="${label}" placeholders="1" tooltip="${c4Tooltip(
         c4Name,
         c4Type,
-        c4Description
+        c4Description,
     )}">
         ${newElem}
     </object>
@@ -67,8 +67,8 @@ function createLinkWrapper(groupId, parent, bounds, link) {
     let groupObj = `           <object id="${groupId}" label="" link="${escX(link)}">
         <mxCell vertex="1" style="group" connectable="0" parent="${parent}">
             <mxGeometry x="${bounds.x}" y="${bounds.y}" width="${bounds.width}" height="${
-        bounds.height
-    }" as="geometry" />
+                bounds.height
+            }" as="geometry" />
         </mxCell>	
     </object>
 `;
