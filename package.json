@@ -5,7 +5,7 @@
   "main": "src/main/todrawio-isyfact.js",
   "scripts": {
     "test": "mocha --parallel tests/**/test*.js",
-    "build": "rm  dist/todrawio-isyfact.bundle.ajs ; esbuild src/main/todrawio-isyfact.js --platform=node --bundle --outfile=dist/todrawio-isyfact.bundle.ajs --loader:.xml=text && cp src/main/todrawio.ajs dist/todrawio.ajs"
+    "build": "rm -f dist/todrawio-isyfact.bundle.ajs dist/todrawio.bundle.ajs ; esbuild src/main/todrawio-isyfact.js --platform=node --bundle --outfile=dist/todrawio-isyfact.bundle.ajs --loader:.xml=text && esbuild src/main/todrawio.ajs --platform=node --bundle --outfile=dist/todrawio.bundle.ajs --loader:.ajs=js"
   },
   "keywords": [
     "drawio",
