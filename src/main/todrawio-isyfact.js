@@ -69,7 +69,6 @@ const archiPrefs = Java.type("com.archimatetool.editor.ArchiPlugin").PREFERENCES
 
 var OutputStreamWriter = Java.type("java.io.OutputStreamWriter");
 var FileOutputStream = Java.type("java.io.FileOutputStream");
-var StandardCharsets = Java.type("java.nio.charset.StandardCharsets");
 
 var theViews = $(selection).filter("archimate-diagram-model");
 
@@ -94,7 +93,6 @@ if (theViews.size() > 0) {
     if (fileName) {
         const date = new Date();
         const timeISOString = date.toISOString();
-        var Charset = Java.type("java.nio.charset.Charset");
 
         var fw = new OutputStreamWriter(new FileOutputStream(fileName, false));
         const header = `<?xml version="1.0" encoding="UTF-8"?>

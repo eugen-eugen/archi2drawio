@@ -411,7 +411,10 @@ const archiElemMap = new Map([
             locationColor +
             ";shape=mxgraph.archimate3.application;appType=location;archiType=square;",
     ],
-    ["grouping", "shape=folder;spacingTop=10;tabWidth=100;tabHeight=25;tabPosition=left;html=1;dashed=1;"],
+    [
+        "grouping",
+        "mxgraph.archimate3.application;appType=grouping;spacingTop=10;tabWidth=100;tabHeight=25;tabPosition=left;html=1;dashed=1;",
+    ],
 
     //JUNCTION
     [
@@ -427,6 +430,12 @@ const archiElemMap = new Map([
             ";verticalAlign=top;fillColor=" +
             junctionOrColor,
     ],
+
+    //VISUAL
+    ["diagram-model-group", "rounded=0;whiteSpace=wrap;html=1;"],
+    ["diagram-model-note_dogear", "shape=card;whiteSpace=wrap;html=1;direction=west;"],
+    ["diagram-model-note_rect", "rounded=0;whiteSpace=wrap;html=1;"],
+    ["diagram-model-note_none", "rounded=0;whiteSpace=wrap;html=1;strokeColor=none;"],
 ]);
 
 // Not (yet) supported:
@@ -434,10 +443,7 @@ const archiElemMap = new Map([
 // ["sketch-model-sticky", "", ""],
 
 // No direct equivalent in draw.io:
-// ["diagram-model-connection", "", ""],
-// ["diagram-model-group", "", ""],
 // ["diagram-model-image", "", ""],
-// ["diagram-model-note", "", ""],
 // ["diagram-model-reference", "", ""],
 
 // Not (yet) supported:
@@ -477,6 +483,9 @@ const archiRelMap = new Map([
     ["serving-relationship", "html=1;endArrow=open;elbow=vertical;endFill=1;rounded=0;"],
     ["specialization-relationship", "endArrow=block;html=1;endFill=0;elbow=vertical;rounded=0;"],
     ["triggering-relationship", "html=1;endArrow=block;dashed=0;elbow=vertical;endFill=1;rounded=0;"],
+
+    //VISUAL
+    ["diagram-model-connection", "html=1;endArrow=none;elbow=vertical;rounded=0;"],
 ]);
 
 const styleAlign = new Map([
@@ -509,28 +518,37 @@ const styleFontStyle = new Map([
  */
 //*****************************************************************************
 
+function getAbsBounds(bounds, e) {
+    let absX = (bounds && bounds.x) || 0;
+    let absY = (bounds && bounds.y) || 0;
+    let width = (bounds && bounds.width) || 0;
+    let height = (bounds && bounds.height) || 0;
+    $(e)
+        .parents()
+        .each((current) => {
+            absX += (current.bounds && current.bounds.x) || 0;
+            absY += (current.bounds && current.bounds.y) || 0;
+        });
+    return { x: absX, y: absY, width, height };
+}
+
 function getAbsoluteBendpoints(conn) {
     let abps = [];
     let bendpoints = Java.from(conn.getRelativeBendpoints());
     let totalBendpoints = bendpoints.length;
 
-    let sb = getAbsCoords(conn.source);
-    let tb = getAbsCoords(conn.target);
+    let sb = getAbsBounds(conn.source.bounds, conn.source);
+    let tb = getAbsBounds(conn.target.bounds, conn.target);
 
     if (totalBendpoints === 0) {
-        abps.push(
-            mostCommonPoint(
-                { x: sb.x, y: sb.y, width: sb.w, height: sb.h },
-                { x: tb.x, y: tb.y, width: tb.w, height: tb.h },
-            ),
-        );
+        abps.push(mostCommonPoint(sb, tb));
         return abps;
     }
 
-    let sourceCenterX = sb.x + sb.w / 2;
-    let sourceCenterY = sb.y + sb.h / 2;
-    let targetCenterX = tb.x + tb.w / 2;
-    let targetCenterY = tb.y + tb.h / 2;
+    let sourceCenterX = sb.x + sb.width / 2;
+    let sourceCenterY = sb.y + sb.height / 2;
+    let targetCenterX = tb.x + tb.width / 2;
+    let targetCenterY = tb.y + tb.height / 2;
 
     bendpoints.forEach((bp, index) => {
         // Calculate weight for this bendpoint
@@ -584,10 +602,7 @@ function mostCommonPoint(bound1, bound2) {
 // without any special characters being interpreted as tags.
 //*****************************************************************************
 function escX(s) {
-    // Decode the string
-    var decodedString = unescape(encodeURIComponent(s));
-
-    return decodedString
+    return s
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -603,10 +618,11 @@ function escX(s) {
 
 function propertiesTable(element) {
     var theProperties = element.prop();
+    console.log("properties: " + theProperties);
     var theXML = "";
     propNames = [];
     for (var i = 0; i < theProperties.length; i++) {
-        if (propNames.includes(theProperties[i])) {
+        if (!propNames.includes(theProperties[i])) {
             propName = theProperties[i].replace(/ /g, "_").replace(/\n/g, "").replace(/\r/g, "");
             propValue = escX(element.prop(theProperties[i]));
             theXML += ` ${propName}="${propValue}"`;
@@ -651,6 +667,19 @@ function handleType(e) {
                     break;
             }
             break;
+        case "diagram-model-note":
+            switch (e.borderType) {
+                case 1:
+                    type = "diagram-model-note_rect";
+                    break;
+                case 2:
+                    type = "diagram-model-note_none";
+                    break;
+                default:
+                    type = "diagram-model-note_dogear";
+                    break;
+            }
+            break;
         default:
             type = e.type;
             break;
@@ -670,6 +699,133 @@ function handleStyle(style, name, newValue) {
         return style.replace(new RegExp(`;${name}=[^;]*;`), `;${name}=${newValue};`);
     } else {
         return style + `${name}=${newValue};`;
+    }
+}
+
+//*****************************************************************************
+//
+// Get the custom image of a visual element, if it is not the default one
+// defined by concept type. Returns the image object or null.
+//
+// imageSource === 0 (IMAGE_SOURCE.SPECIALIZATION): from specialization profile
+// imageSource === 1 (IMAGE_SOURCE.CUSTOM): from the visual element itself
+//
+//*****************************************************************************
+
+function getCustomImage(e) {
+    console.log("Checking for custom image for element " + e.name + "  " + e.imageSource);
+    if (e.imageSource === IMAGE_SOURCE.SPECIALIZATION) {
+        let specName = e.concept.specialization;
+        if (specName) {
+            let spec = model.findSpecialization(specName, e.concept.type);
+            return spec ? spec.image : null;
+        }
+        return null;
+    } else if (e.imageSource === IMAGE_SOURCE.CUSTOM) {
+        console.log("Custom image found for element " + e.name + "  " + e.image);
+        return e.image;
+    }
+    console.log("no image for" + e.name);
+    return null;
+}
+
+//*****************************************************************************
+//
+// Encode an Archi image object as a data-URI (data:<mime>,<base64>).
+// Returns null when encoding fails or the image is unavailable.
+//
+//*****************************************************************************
+
+function getImageAsBase64(imageObj) {
+    if (!imageObj) return null;
+    try {
+        var imagePath = imageObj.path;
+        if (!imagePath) return null;
+
+        var modelFilePath = model.getPath();
+        if (!modelFilePath) {
+            console.log("Model not saved yet — cannot read images. Please save the model first.");
+            return null;
+        }
+
+        var ZipFile = Java.type("java.util.zip.ZipFile");
+        var zf = new ZipFile(modelFilePath);
+        try {
+            var entry = zf.getEntry(imagePath);
+            if (!entry) return null;
+            var is = zf.getInputStream(entry);
+            var ByteArrayOutputStream = Java.type("java.io.ByteArrayOutputStream");
+            var baos = new ByteArrayOutputStream();
+            var buf = Java.type("java.lang.reflect.Array").newInstance(Java.type("java.lang.Byte").TYPE, 4096);
+            var n;
+            while ((n = is.read(buf)) !== -1) {
+                baos.write(buf, 0, n);
+            }
+            is.close();
+            var bytes = baos.toByteArray();
+        } finally {
+            zf.close();
+        }
+
+        if (!bytes || bytes.length === 0) return null;
+
+        var Base64 = Java.type("java.util.Base64");
+        var ext = imagePath.substring(imagePath.lastIndexOf(".") + 1).toLowerCase();
+        var mime =
+            ext === "svg"
+                ? "image/svg+xml"
+                : ext === "jpg" || ext === "jpeg"
+                  ? "image/jpeg"
+                  : ext === "gif"
+                    ? "image/gif"
+                    : "image/png";
+        return "data:" + mime + "," + Base64.getEncoder().encodeToString(bytes);
+    } catch (e) {
+        console.log("Could not encode image: " + e);
+        return null;
+    }
+}
+
+//*****************************************************************************
+//
+// Alternative approach using IArchiveManager via the model's EObject adapter.
+// Uses the same Java API as Archi internally.
+// Returns a data-URI string or null.
+//
+//*****************************************************************************
+
+function getImageAsBase64_alt(imageObj) {
+    if (!imageObj) return null;
+    try {
+        var imagePath = imageObj.path;
+        if (!imagePath) return null;
+
+        var IArchiveManager = Java.type("com.archimatetool.editor.model.IArchiveManager");
+        var modelClass = model.getClass();
+        var method = modelClass.getDeclaredMethod("getEObject");
+        method.setAccessible(true);
+        var javaModel = method.invoke(model);
+
+        var archiveManager = javaModel.getAdapter(IArchiveManager.class);
+        if (!archiveManager) return null;
+
+        var bytes = archiveManager.getBytesFromEntry(imagePath);
+        if (!bytes) return null;
+
+        var Base64 = Java.type("java.util.Base64");
+        var ext = imagePath.substring(imagePath.lastIndexOf(".") + 1).toLowerCase();
+        var mime =
+            ext === "svg"
+                ? "image/svg+xml"
+                : ext === "jpg" || ext === "jpeg"
+                  ? "image/jpeg"
+                  : ext === "gif"
+                    ? "image/gif"
+                    : "image/png";
+        return "data:" + mime + "," + Base64.getEncoder().encodeToString(bytes);
+    } catch (e) {
+        console.log("Could not encode image (alt): " + e);
+        return null;
     }
 }
 
@@ -712,7 +868,7 @@ function copyStyle(e, style) {
     if (e.fontStyle !== null) {
         style = handleStyle(style, "fontStyle", styleFontStyle.get(e.fontStyle));
     }
-    if (e.lineColor !== null) {
+    if (e.lineColor !== null && !style.includes("strokeColor=none")) {
         style = handleStyle(style, "strokeColor", e.lineColor);
     }
     if (e.textAlignment !== null) {
@@ -757,11 +913,13 @@ function handleBendPoints(e) {
 }
 
 function handleEntryExit(e) {
-    let xml = "";
+    let result = { exit: "", entry: "", coordinates: { exit: { x: 0, y: 0 }, entry: { x: 0, y: 0 } } };
     if (typeof e.source.bounds !== "undefined" && typeof e.target.bounds != "undefined") {
         let bps = getAbsoluteBendpoints(e);
 
         let s = getAbsCoords(e.source);
+        let exitX, exitY, entryX, entryY;
+
         if (bps[0].x <= s.x) {
             exitX = 0;
         } else if (s.x + s.w <= bps[0].x) {
@@ -794,9 +952,110 @@ function handleEntryExit(e) {
             entryY = (bps[n].y - t.y) / t.h;
         }
 
-        xml = `exitX=${exitX};exitY=${exitY};entryX=${entryX};entryY=${entryY};`;
+        result.exit = `exitX=${exitX};exitY=${exitY};`;
+        result.entry = `entryX=${entryX};entryY=${entryY};`;
+        result.coordinates = {
+            exit: { x: s.x + exitX * s.w, y: s.y + exitY * s.h },
+            entry: { x: t.x + entryX * t.w, y: t.y + entryY * t.h },
+        };
     }
-    return xml;
+    return result;
+}
+
+function getAbsoluteLabelPosition(conn) {
+    if (conn.textPosition === 0) {
+        return { x: -0.9, y: 0 };
+    }
+    if (conn.textPosition === 2) {
+        return { x: 0.9, y: 0 };
+    }
+
+    let absBendPoints = getAbsoluteBendpoints(conn);
+
+    let sb = getAbsBounds(conn.source.bounds, conn.source);
+    let tb = getAbsBounds(conn.target.bounds, conn.target);
+    let bps = absBendPoints;
+
+    function clamp(val, min, max) {
+        return val <= min ? 0 : val >= max ? 1 : (val - min) / (max - min);
+    }
+
+    let exitX = clamp(bps[0].x, sb.x, sb.x + sb.width);
+    let exitY = clamp(bps[0].y, sb.y, sb.y + sb.height);
+    let last = bps[bps.length - 1];
+    let entryX = clamp(last.x, tb.x, tb.x + tb.width);
+    let entryY = clamp(last.y, tb.y, tb.y + tb.height);
+
+    let sourcePoint = { x: sb.x + exitX * sb.width, y: sb.y + exitY * sb.height };
+    let targetPoint = { x: tb.x + entryX * tb.width, y: tb.y + entryY * tb.height };
+
+    let n = absBendPoints.length;
+    let labelIndex;
+
+    if (n % 2 === 1) {
+        labelIndex = Math.floor(n / 2);
+    } else {
+        labelIndex = n / 2 - 0.5;
+    }
+
+    let path = [sourcePoint, ...absBendPoints, targetPoint];
+    let distances = [0];
+    for (let i = 1; i < path.length; i++) {
+        let dx = path[i].x - path[i - 1].x;
+        let dy = path[i].y - path[i - 1].y;
+        distances.push(distances[i - 1] + Math.sqrt(dx * dx + dy * dy));
+    }
+    let totalLength = distances[distances.length - 1];
+
+    let labelDist;
+    if (Number.isInteger(labelIndex)) {
+        labelDist = distances[labelIndex + 1];
+    } else {
+        let i1 = Math.floor(labelIndex);
+        let i2 = Math.ceil(labelIndex);
+        labelDist = (distances[i1 + 1] + distances[i2 + 1]) / 2;
+    }
+
+    let ratio = totalLength > 0 ? labelDist / totalLength : 0.5;
+    return { x: (ratio - 0.5) * 2, y: 0 };
+}
+
+//*****************************************************************************
+//
+// Generate a draw.io mxCell XML string for a custom image overlay
+// positioned at the top-right of the parent element.
+// Returns the XML string, or null if no custom image is available.
+//
+//*****************************************************************************
+
+function createCustomImageCell(e) {
+    let customImage = getCustomImage(e);
+    if (!customImage) return null;
+    let imageData = getImageAsBase64_alt(customImage);
+    if (!imageData) return null;
+    let imgW = customImage.width || 20;
+    let imgH = customImage.height || 20;
+    return {
+        imageData: imageData,
+        xml:
+            '<mxCell id="' +
+            e.id +
+            '-img" style="shape=image;image=' +
+            imageData +
+            ';imageAspect=1;noLabel=1;" vertex="1" parent="' +
+            e.id +
+            '">\n' +
+            '<mxGeometry x="1" y="0" width="' +
+            imgW +
+            '" height="' +
+            imgH +
+            '" relative="1" as="geometry">\n' +
+            '<mxPoint x="-' +
+            (imgW + 4) +
+            '" y="4" as="offset"/>\n' +
+            "</mxGeometry>\n" +
+            "</mxCell>\n",
+    };
 }
 
 //*****************************************************************************
@@ -810,12 +1069,22 @@ function mapElements(fw, element, level, parent) {
         .children()
         .each(function (e) {
             let newId = e.id;
-            let newName = escX(e.name);
+            let newName = escX(
+                e.labelValue && e.labelValue.trim() !== "" ? e.labelValue : e.text ? e.text : e.name || "",
+            );
+            let newLabel = "&lt;span style=&quot;overflow-wrap: anywhere&quot;&gt;" + newName + "&lt;/span&gt;";
             let newProps = propertiesTable(e);
             let style = archiElemMap.get(handleType(e));
             //*** Map shapes ***
             if (typeof style !== "undefined") {
                 style = copyStyle(e, style);
+                style += ";metaEdit=1";
+                // Check for custom image early so we can strip the default icon
+                let customImageCell = createCustomImageCell(e);
+                if (customImageCell) {
+                    // Remove the default ArchiMate icon (appType) from style
+                    style = style.replace(/;?appType=[^;]*/g, "");
+                }
                 var newElem =
                     '<mxCell style="' +
                     style +
@@ -832,11 +1101,15 @@ function mapElements(fw, element, level, parent) {
                     e.bounds.height +
                     '" as="geometry" />\n' +
                     "</mxCell>\n";
-                var newObj = `			<object  id="${newId}" label="${newName}" ${newProps}>
+                var newObj = `			<object  id="${newId}" label="${newLabel}" ${newProps}>
 				${newElem}
 			</object>
 `;
                 fw.write(newObj);
+                // Add custom image at top-right if present
+                if (customImageCell) {
+                    fw.write(customImageCell.xml);
+                }
                 if ($(e).children().length > 0) {
                     mapElements(fw, e, level + 1, e.id);
                 }
@@ -852,13 +1125,16 @@ function mapElements(fw, element, level, parent) {
                         style = handleStyle(style, "strokeColor", "none");
                     }
 
-                    let entryExit = routeConnections ? handleEntryExit(e) : "";
+                    let entryExit = routeConnections ? handleEntryExit(e) : { exit: "", entry: "" };
                     let bendPoints = routeConnections ? handleBendPoints(e) : "";
+                    let labelPosition = routeConnections ? getAbsoluteLabelPosition(e) : { x: 0, y: 0 };
+                    let labelPosAttr = ' x="' + labelPosition.x + '" y="' + labelPosition.y + '"';
 
                     let newElem =
                         '<mxCell style="' +
                         style +
-                        entryExit +
+                        entryExit.exit +
+                        entryExit.entry +
                         '" edge="1" parent="' +
                         parent +
                         '" source="' +
@@ -866,11 +1142,13 @@ function mapElements(fw, element, level, parent) {
                         '" target="' +
                         e.target.id +
                         '">\n' +
-                        '<mxGeometry width="160" relative="1" as="geometry">\n' +
+                        "<mxGeometry" +
+                        labelPosAttr +
+                        ' width="160" relative="1" as="geometry">\n' +
                         bendPoints +
                         "</mxGeometry>\n" +
                         "</mxCell>\n";
-                    let newObj = `				<object  id="${newId}" label="${newName}" ${newProps}>
+                    let newObj = `				<object  id="${newId}" label="${newLabel}" ${newProps}>
 					${newElem}
 				</object>
 `;
@@ -888,46 +1166,74 @@ function mapElements(fw, element, level, parent) {
 
 console.log("Starting to export view to draw.io");
 
-var FileWriter = Java.type("java.io.FileWriter");
+var OutputStreamWriter = Java.type("java.io.OutputStreamWriter");
+var FileOutputStream = Java.type("java.io.FileOutputStream");
+var StandardCharsets = Java.type("java.nio.charset.StandardCharsets");
 
-var theView = $(selection).filter("archimate-diagram-model").first();
+function getParameter(paramName) {
+    try {
+        const argv = $.process.argv;
+        if (!argv || argv.length === 0) return null;
+        const paramFlag = `--${paramName}`;
+        for (let i = 0; i < argv.length; i++) {
+            if (argv[i] === paramFlag && i + 1 < argv.length) return argv[i + 1];
+        }
+    } catch (e) {}
+    return null;
+}
 
-if (theView) {
-    const fileName = window.promptSaveFile({
-        title: `Draw.io filename for view ${theView.name}`,
-        filterExtensions: ["*.xml"],
-        fileName: `${model.name}_${theView.name}.xml`,
+function buildDiagramXml(fw, theView) {
+    fw.write('    <diagram id="' + theView.id + '-diagram" name="' + escX(theView.name) + '">\n');
+    fw.write(
+        '        <mxGraphModel dx="2302" dy="697" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">\n',
+    );
+    fw.write("            <root>\n");
+    fw.write('                <mxCell id="0" />\n');
+    fw.write('                <mxCell id="' + theView.id + '" parent="0" />\n');
+
+    mapElements(fw, theView, 0, theView.id);
+
+    fw.write("            </root>\n");
+    fw.write("        </mxGraphModel>\n");
+    fw.write("    </diagram>\n");
+}
+
+var theViews = $(selection).filter("archimate-diagram-model");
+
+if (theViews.size() === 0) {
+    theViews = $("archimate-diagram-model").filter(function (v) {
+        return typeof v.prop === "function" && v.prop("Drawio:View:Tag") === "publish";
     });
+}
+
+if (theViews.size() > 0) {
+    const defaultFileName = theViews.size() === 1 ? `${model.name}_${theViews.first().name}` : model.name;
+
+    const paramFile = getParameter("drawioOutputFile");
+    const fileName =
+        paramFile ||
+        window.promptSaveFile({
+            title: `Draw.io filename for ${theViews.size()} view(s)`,
+            filterExtensions: ["*.drawio"],
+            fileName: defaultFileName,
+        });
 
     if (fileName) {
         const date = new Date();
         const timeISOString = date.toISOString();
 
-        var fw = new FileWriter(fileName, false);
-        const header = `<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="" modified="${timeISOString}" agent="Archi" etag="${model.name}" type="device">
-	<diagram id="${theView.id}" name="${escX(theView.name)}">
-		<mxGraphModel dx="2302" dy="697" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
-			<root>
-				<mxCell id="0" />
-				<mxCell id="1" parent="0" />
-`;
+        var fw = new OutputStreamWriter(new FileOutputStream(fileName, false), StandardCharsets.UTF_8);
+
+        const header = `<?xml version="1.0" encoding="UTF-8"?>\n<mxfile host="" modified="${timeISOString}" agent="Archi" etag="${model.name}" type="device">\n`;
         fw.write(header);
 
-        // try {
-        mapElements(fw, theView, 0, "1");
-        // } catch (err) {
-        // console.log(`An error occurred while exporting the view: ${err}`);
-        // }
+        theViews.each(function (view) {
+            buildDiagramXml(fw, view);
+        });
 
-        var footer = `			</root>
-		</mxGraphModel>
-	</diagram>
-</mxfile>\n
-`;
-        fw.write(footer);
+        fw.write("</mxfile>\n");
         fw.close();
-        console.log("Done exporting view to draw.io");
+        console.log(`Done exporting ${theViews.size()} view(s) to draw.io`);
     }
 } else {
     console.log("No view selected");
