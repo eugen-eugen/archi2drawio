@@ -16,6 +16,11 @@ Inspired by https://gist.github.com/pmduque/68a6fd0f23112fe27392833f4de0b6e5
 ```
 .
 ├── data/                # Static data files (e.g., IsyFact.drawiolib.xml)
+```
+
+The `IsyFact.drawiolib.xml` draw.io shape library originates from the [IsyFact Standards](https://github.com/IsyFact/isyfact-standards/blob/master/isyfact-standards-doc/src/docs/antora/modules/methodik/attachments/IsyFact.drawiolib.xml) repository.
+
+```
 ├── dist/                # Build output (bundle and copied resources)
 ├── scripts/             # (Optional) CLI or utility scripts
 ├── src/
