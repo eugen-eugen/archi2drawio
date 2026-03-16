@@ -90,10 +90,30 @@ jobs:
             -w /workspace \
             woozymasta/archimate-ci-image:5.7.0-1.0.6 \
             sh -c '
-              mkdir -p /root/.archi/dropins &&
-              unzip -o /workspace/archi-scripting-plugin.zip -d /root/.archi/dropins/ &&
-              mkdir -p /root/Documents/Archi/scripts &&
-              cp /workspace/dist/*.ajs /root/Documents/Archi/scripts/ &&
+              set -ex
+
+              echo "=== Checking model file ==="
+              ls -lh /workspace/src/test/Archinsurance.archimate
+
+              echo "=== Installing scripting plugin ==="
+              mkdir -p /root/.archi/dropins
+              unzip -o /workspace/archi-scripting-plugin.zip -d /root/.archi/dropins/
+              ls -lR /root/.archi/dropins/
+
+              echo "=== Copying scripts ==="
+              mkdir -p /root/Documents/Archi/scripts
+              cp /workspace/dist/*.ajs /root/Documents/Archi/scripts/
+              ls -lh /root/Documents/Archi/scripts/
+
+              echo "=== Checking Archi binary ==="
+              ls -lh /opt/Archi/Archi
+              cat /opt/Archi/Archi.ini || true
+
+              echo "=== Checking xvfb ==="
+              which xvfb-run || echo "xvfb-run not found"
+              which Xvfb || echo "Xvfb not found"
+
+              echo "=== Running Archi ==="
               xvfb-run /opt/Archi/Archi \
                 -application com.archimatetool.commandline.app \
                 -a --launcher.suppressErrors -consoleLog -nosplash \
@@ -101,10 +121,19 @@ jobs:
                 --loadModel /workspace/src/test/Archinsurance.archimate \
                 --script.runScript /root/Documents/Archi/scripts/todrawio.bundle.ajs \
                 --drawioOutputFile /workspace/Archinsurance.drawio
+              ARCHI_EXIT=$?
+
+              echo "=== Archi exit code: $ARCHI_EXIT ==="
+              echo "=== Checking output files ==="
+              ls -lh /workspace/*.drawio 2>/dev/null || echo "No .drawio files found"
+              echo "=== Archi workspace log ==="
+              cat /root/.archi/.metadata/.log 2>/dev/null || echo "No Archi log found"
+              exit $ARCHI_EXIT
             '
 
       - name: Upload drawio artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: drawio-export
           path: "*.drawio"
