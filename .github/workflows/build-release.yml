@@ -57,3 +57,54 @@ jobs:
           tags: |
             jemojemo/archi2drawio:${{ steps.version.outputs.version }}
             jemojemo/archi2drawio:latest
+
+  test-drawio-export:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build bundle
+        run: npm run build
+
+      - name: Extract Archi scripting plugin
+        run: |
+          docker create --name archi-plugin jemojemo/archi-scripting-plugin:latest true
+          docker cp archi-plugin:/plugin/archi-scripting-plugin.archiplugin archi-scripting-plugin.zip
+          docker rm archi-plugin
+
+      - name: Export Archinsurance to drawio
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            woozymasta/archimate-ci-image:5.7.0-1.0.6 \
+            sh -c '
+              mkdir -p /root/.archi/dropins &&
+              unzip -o /workspace/archi-scripting-plugin.zip -d /root/.archi/dropins/ &&
+              mkdir -p /root/Documents/Archi/scripts &&
+              cp /workspace/dist/*.ajs /root/Documents/Archi/scripts/ &&
+              xvfb-run /opt/Archi/Archi \
+                -application com.archimatetool.commandline.app \
+                -a --launcher.suppressErrors -consoleLog -nosplash \
+                --abortOnException \
+                --loadModel /workspace/src/test/Archinsurance.archimate \
+                --script.runScript /root/Documents/Archi/scripts/todrawio.bundle.ajs \
+                --drawioOutputFile /workspace/Archinsurance.drawio
+            '
+
+      - name: Upload drawio artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: drawio-export
+          path: "*.drawio"

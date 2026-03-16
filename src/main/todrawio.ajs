@@ -44,6 +44,9 @@
 
 const routeConnections = true; //if true, tries to replicate relationship custom routing
 
+const BORDER = { DOGEAR: 0, RECTANGLE: 1, NONE: 2 };
+const CONNECTION_TEXT_POSITION = { SOURCE: 0, MIDDLE: 1, TARGET: 2 };
+
 //*****************************************************************************
 //
 // Below there will be dragons!
@@ -51,17 +54,6 @@ const routeConnections = true; //if true, tries to replicate relationship custom
 //*****************************************************************************
 const { archiElemMap, archiRelMap, styleAlign, stylePosition, styleFontStyle } = require("./archiElemMap.js");
 const { archiFigureMap } = require("./archiFigureMap.js");
-
-//*****************************************************************************
-/**
- * Get all bendpoints of the connection using absolute coordinates
- *
- * @param conn  -    visual conenction
- * @returns {*[]} - an array of bendpoints
- *
- * from: xmayeur / jArchi library with functions to manage relationship layout in views (https://gist.github.com/xmayeur/bbe80af3d09706b34848b4bbfaa71103)
- */
-//*****************************************************************************
 
 function getAbsBounds(bounds, e) {
     let absX = (bounds && bounds.x) || 0;
@@ -77,15 +69,29 @@ function getAbsBounds(bounds, e) {
     return { x: absX, y: absY, width, height };
 }
 
+//*****************************************************************************
+/**
+ * Get all bendpoints of the connection using absolute coordinates
+ *
+ * @param conn  -    visual conenction
+ * @returns {*[]} - an array of bendpoints
+ *
+ * from: xmayeur / jArchi library with functions to manage relationship layout in views (https://gist.github.com/xmayeur/bbe80af3d09706b34848b4bbfaa71103)
+ */
+//*****************************************************************************
+
 function getAbsoluteBendpoints(conn) {
     let abps = [];
-    let bendpoints = Java.from(conn.getRelativeBendpoints());
-    let totalBendpoints = bendpoints.length;
+
+    let bendpoints = Array.from(conn.getRelativeBendpoints());
 
     let sb = getAbsBounds(conn.source.bounds, conn.source);
     let tb = getAbsBounds(conn.target.bounds, conn.target);
 
-    if (totalBendpoints === 0) {
+    if (bendpoints.length === 0) {
+        // No explicit bendpoints: synthesize a single midpoint between
+        // the two connected shapes so that entry/exit calculations and
+        // label positioning still have a reference coordinate.
         abps.push(mostCommonPoint(sb, tb));
         return abps;
     }
@@ -98,7 +104,7 @@ function getAbsoluteBendpoints(conn) {
     bendpoints.forEach((bp, index) => {
         // Calculate weight for this bendpoint
         // Weight ranges from (1/(n+1)) for first bendpoint to (n/(n+1)) for last
-        let weight = (index + 1) / (totalBendpoints + 1);
+        let weight = (index + 1) / (bendpoints.length + 1);
 
         // Calculate source contribution (weighted by 1 - weight)
         let sourceX = (sourceCenterX + bp.startX) * (1 - weight);
@@ -133,6 +139,10 @@ function getAbsoluteBendpoints(conn) {
  * @returns {{x, y}}
  */
 //*****************************************************************************
+function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+}
+
 function mostCommonPoint(bound1, bound2) {
     let xs = [bound1.x, bound1.x + bound1.width, bound2.x, bound2.x + bound2.width].sort((a, b) => a - b);
     let ys = [bound1.y, bound1.y + bound1.height, bound2.y, bound2.y + bound2.height].sort((a, b) => a - b);
@@ -163,7 +173,6 @@ function escX(s) {
 
 function propertiesTable(element) {
     var theProperties = element.prop();
-    console.log("properties: " + theProperties);
     var theXML = "";
     propNames = [];
     for (var i = 0; i < theProperties.length; i++) {
@@ -214,13 +223,13 @@ function handleType(e) {
             break;
         case "diagram-model-note":
             switch (e.borderType) {
-                case 1:
+                case BORDER.RECTANGLE:
                     type = "diagram-model-note_rect";
                     break;
-                case 2:
+                case BORDER.NONE:
                     type = "diagram-model-note_none";
                     break;
-                default:
+                default: // BORDER.DOGEAR
                     type = "diagram-model-note_dogear";
                     break;
             }
@@ -258,7 +267,6 @@ function handleStyle(style, name, newValue) {
 //*****************************************************************************
 
 function getCustomImage(e) {
-    console.log("Checking for custom image for element " + e.name + "  " + e.imageSource);
     if (e.imageSource === IMAGE_SOURCE.SPECIALIZATION) {
         let specName = e.concept.specialization;
         if (specName) {
@@ -267,10 +275,8 @@ function getCustomImage(e) {
         }
         return null;
     } else if (e.imageSource === IMAGE_SOURCE.CUSTOM) {
-        console.log("Custom image found for element " + e.name + "  " + e.image);
         return e.image;
     }
-    console.log("no image for" + e.name);
     return null;
 }
 
@@ -282,64 +288,6 @@ function getCustomImage(e) {
 //*****************************************************************************
 
 function getImageAsBase64(imageObj) {
-    if (!imageObj) return null;
-    try {
-        var imagePath = imageObj.path;
-        if (!imagePath) return null;
-
-        var modelFilePath = model.getPath();
-        if (!modelFilePath) {
-            console.log("Model not saved yet — cannot read images. Please save the model first.");
-            return null;
-        }
-
-        var ZipFile = Java.type("java.util.zip.ZipFile");
-        var zf = new ZipFile(modelFilePath);
-        try {
-            var entry = zf.getEntry(imagePath);
-            if (!entry) return null;
-            var is = zf.getInputStream(entry);
-            var ByteArrayOutputStream = Java.type("java.io.ByteArrayOutputStream");
-            var baos = new ByteArrayOutputStream();
-            var buf = Java.type("java.lang.reflect.Array").newInstance(Java.type("java.lang.Byte").TYPE, 4096);
-            var n;
-            while ((n = is.read(buf)) !== -1) {
-                baos.write(buf, 0, n);
-            }
-            is.close();
-            var bytes = baos.toByteArray();
-        } finally {
-            zf.close();
-        }
-
-        if (!bytes || bytes.length === 0) return null;
-
-        var Base64 = Java.type("java.util.Base64");
-        var ext = imagePath.substring(imagePath.lastIndexOf(".") + 1).toLowerCase();
-        var mime =
-            ext === "svg"
-                ? "image/svg+xml"
-                : ext === "jpg" || ext === "jpeg"
-                  ? "image/jpeg"
-                  : ext === "gif"
-                    ? "image/gif"
-                    : "image/png";
-        return "data:" + mime + "," + Base64.getEncoder().encodeToString(bytes);
-    } catch (e) {
-        console.log("Could not encode image: " + e);
-        return null;
-    }
-}
-
-//*****************************************************************************
-//
-// Alternative approach using IArchiveManager via the model's EObject adapter.
-// Uses the same Java API as Archi internally.
-// Returns a data-URI string or null.
-//
-//*****************************************************************************
-
-function getImageAsBase64_alt(imageObj) {
     if (!imageObj) return null;
     try {
         var imagePath = imageObj.path;
@@ -369,7 +317,7 @@ function getImageAsBase64_alt(imageObj) {
                     : "image/png";
         return "data:" + mime + "," + Base64.getEncoder().encodeToString(bytes);
     } catch (e) {
-        console.log("Could not encode image (alt): " + e);
+        console.error("Could not encode image (alt): " + e);
         return null;
     }
 }
@@ -449,39 +397,13 @@ function handleEntryExit(e) {
         let bps = getAbsoluteBendpoints(e);
 
         let s = getAbsCoords(e.source);
-        let exitX, exitY, entryX, entryY;
 
-        if (bps[0].x <= s.x) {
-            exitX = 0;
-        } else if (s.x + s.w <= bps[0].x) {
-            exitX = 1;
-        } else {
-            exitX = (1.0 * (bps[0].x - s.x)) / s.w;
-        }
-        if (bps[0].y <= s.y) {
-            exitY = 0;
-        } else if (s.y + s.h <= bps[0].y) {
-            exitY = 1;
-        } else {
-            exitY = (1.0 * (bps[0].y - s.y)) / s.h;
-        }
-
+        const exitX = clamp((bps[0].x - s.x) / s.w, 0, 1);
+        const exitY = clamp((bps[0].y - s.y) / s.h, 0, 1);
         let t = getAbsCoords(e.target);
         let n = bps.length - 1;
-        if (bps[n].x <= t.x) {
-            entryX = 0;
-        } else if (t.x + t.w <= bps[n].x) {
-            entryX = 1;
-        } else {
-            entryX = (bps[n].x - t.x) / t.w;
-        }
-        if (bps[n].y <= t.y) {
-            entryY = 0;
-        } else if (t.y + t.h <= bps[n].y) {
-            entryY = 1;
-        } else {
-            entryY = (bps[n].y - t.y) / t.h;
-        }
+        const entryX = clamp((bps[n].x - t.x) / t.w, 0, 1);
+        const entryY = clamp((bps[n].y - t.y) / t.h, 0, 1);
 
         result.exit = `exitX=${exitX};exitY=${exitY};`;
         result.entry = `entryX=${entryX};entryY=${entryY};`;
@@ -494,10 +416,10 @@ function handleEntryExit(e) {
 }
 
 function getAbsoluteLabelPosition(conn) {
-    if (conn.textPosition === 0) {
+    if (conn.textPosition === CONNECTION_TEXT_POSITION.SOURCE) {
         return { x: -0.9, y: 0 };
     }
-    if (conn.textPosition === 2) {
+    if (conn.textPosition === CONNECTION_TEXT_POSITION.TARGET) {
         return { x: 0.9, y: 0 };
     }
 
@@ -507,26 +429,21 @@ function getAbsoluteLabelPosition(conn) {
     let tb = getAbsBounds(conn.target.bounds, conn.target);
     let bps = absBendPoints;
 
-    function clamp(val, min, max) {
-        return val <= min ? 0 : val >= max ? 1 : (val - min) / (max - min);
-    }
-
-    let exitX = clamp(bps[0].x, sb.x, sb.x + sb.width);
-    let exitY = clamp(bps[0].y, sb.y, sb.y + sb.height);
+    let exitX = clamp((bps[0].x - sb.x) / sb.width, 0, 1);
+    let exitY = clamp((bps[0].y - sb.y) / sb.height, 0, 1);
     let last = bps[bps.length - 1];
-    let entryX = clamp(last.x, tb.x, tb.x + tb.width);
-    let entryY = clamp(last.y, tb.y, tb.y + tb.height);
+    let entryX = clamp((last.x - tb.x) / tb.width, 0, 1);
+    let entryY = clamp((last.y - tb.y) / tb.height, 0, 1);
 
     let sourcePoint = { x: sb.x + exitX * sb.width, y: sb.y + exitY * sb.height };
     let targetPoint = { x: tb.x + entryX * tb.width, y: tb.y + entryY * tb.height };
 
-    let n = absBendPoints.length;
     let labelIndex;
 
-    if (n % 2 === 1) {
-        labelIndex = Math.floor(n / 2);
+    if (absBendPoints.length % 2 === 1) {
+        labelIndex = (absBendPoints.length - 1) / 2;
     } else {
-        labelIndex = n / 2 - 0.5;
+        labelIndex = absBendPoints.length / 2 - 0.5;
     }
 
     let path = [sourcePoint, ...absBendPoints, targetPoint];
@@ -539,12 +456,11 @@ function getAbsoluteLabelPosition(conn) {
     let totalLength = distances[distances.length - 1];
 
     let labelDist;
-    if (Number.isInteger(labelIndex)) {
-        labelDist = distances[labelIndex + 1];
+
+    if (absBendPoints.length % 2 === 1) {
+        labelDist = distances[(absBendPoints.length + 1) / 2];
     } else {
-        let i1 = Math.floor(labelIndex);
-        let i2 = Math.ceil(labelIndex);
-        labelDist = (distances[i1 + 1] + distances[i2 + 1]) / 2;
+        labelDist = (distances[absBendPoints.length / 2] + distances[1 + absBendPoints.length / 2]) / 2;
     }
 
     let ratio = totalLength > 0 ? labelDist / totalLength : 0.5;
@@ -562,7 +478,7 @@ function getAbsoluteLabelPosition(conn) {
 function createCustomImageCell(e) {
     let customImage = getCustomImage(e);
     if (!customImage) return null;
-    let imageData = getImageAsBase64_alt(customImage);
+    let imageData = getImageAsBase64(customImage);
     if (!imageData) return null;
     let imgW = customImage.width || 20;
     let imgH = customImage.height || 20;
