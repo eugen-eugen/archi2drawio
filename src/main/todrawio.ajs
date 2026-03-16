@@ -776,14 +776,15 @@ if (theViews.size() > 0) {
     var tags = Object.keys(tagGroups);
     if (tags.length > 0) {
         const paramFile = getParameter("drawioOutputFile");
-        // If a single output file is specified via CLI, merge all tagged views into it
         if (paramFile) {
-            var allViews = [];
+            // Derive per-tag filenames from the CLI parameter
+            var baseName = paramFile.endsWith(".drawio") ? paramFile.slice(0, -7) : paramFile;
             tags.forEach(function (tag) {
-                allViews = allViews.concat(tagGroups[tag]);
+                var filePath = baseName + "." + tag + ".drawio";
+                writeDrawioFile(filePath, tagGroups[tag]);
+                console.log(`Exported ${tagGroups[tag].length} view(s) with tag "${tag}" to ${filePath}`);
             });
-            writeDrawioFile(paramFile, allViews);
-            console.log(`Done exporting ${allViews.length} view(s) to draw.io`);
+            console.log(`Done exporting ${tags.length} file(s) to draw.io`);
         } else {
             // Ask user for a directory, then create one file per tag
             var dir = window.promptOpenDirectory({ title: "Select output directory for draw.io files" });
