@@ -754,7 +754,9 @@ if (theViews.size() > 0) {
 
     if (fileName) {
         var viewList = [];
-        theViews.each(function (v) { viewList.push(v); });
+        theViews.each(function (v) {
+            viewList.push(v);
+        });
         writeDrawioFile(fileName, viewList);
         console.log(`Done exporting ${viewList.length} view(s) to draw.io`);
     }
@@ -777,7 +779,9 @@ if (theViews.size() > 0) {
         // If a single output file is specified via CLI, merge all tagged views into it
         if (paramFile) {
             var allViews = [];
-            tags.forEach(function (tag) { allViews = allViews.concat(tagGroups[tag]); });
+            tags.forEach(function (tag) {
+                allViews = allViews.concat(tagGroups[tag]);
+            });
             writeDrawioFile(paramFile, allViews);
             console.log(`Done exporting ${allViews.length} view(s) to draw.io`);
         } else {
