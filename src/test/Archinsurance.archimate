@@ -1013,6 +1013,7 @@
   </folder>
   <folder name="Views" id="id-d4d9fe53d37c4993b930898749161cc2" type="diagrams">
     <folder name="Phase D: Technology Architecture" id="id-27b560d9d64b497d9e78272c6a78e747">
+      <property key="Drawio:View:Tag" value="file1"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Data Acquisition from IoT services" id="id-39112">
         <child xsi:type="archimate:DiagramObject" id="id-39115" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffb973" archimateElement="id-47509">
           <bounds x="47" y="167" width="660" height="293"/>
@@ -1071,6 +1072,7 @@
             <bounds x="26" y="34" width="133" height="53"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Environments and Locations Diagram (Baseline)" id="id-39251">
         <child xsi:type="archimate:DiagramObject" id="id-39254" targetConnections="id-39452 id-39472" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffaf" archimateElement="id-47098">
@@ -1181,6 +1183,7 @@
             </child>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="IoT Device Services" id="id-38504">
         <child xsi:type="archimate:DiagramObject" id="id-38507" targetConnections="id-38596 id-38601" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47133">
@@ -1224,6 +1227,7 @@
           <bounds x="467" y="427" width="133" height="53"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-38606" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-38574" target="id-38543" archimateRelationship="id-47130"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Environments and Locations Diagram (Target)" id="id-38903">
         <child xsi:type="archimate:DiagramObject" id="id-38906" targetConnections="id-39075 id-39105" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffaf" archimateElement="id-47098">
@@ -1320,6 +1324,7 @@
             </child>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Environments and Locations Diagram (Gap analysis)" id="id-38613">
         <child xsi:type="archimate:DiagramObject" id="id-38616" targetConnections="id-38861 id-38891" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffaf" archimateElement="id-47098">
@@ -1457,11 +1462,13 @@
             </child>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Gap analysis Technology Architecture" id="id-46051">
         <child xsi:type="archimate:DiagramModelReference" id="id-46054" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38613">
           <bounds x="87" y="73" width="153" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Target Technology Architecture" id="id-46014">
         <child xsi:type="archimate:DiagramModelReference" id="id-46017" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38903">
@@ -1476,14 +1483,17 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46041" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-39247">
           <bounds x="293" y="33" width="147" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Baseline Technology Architecture" id="id-45943">
         <child xsi:type="archimate:DiagramModelReference" id="id-45946" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-39251">
           <bounds x="67" y="80" width="167" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
     </folder>
     <folder name="Phase B: Business Architecture" id="id-44bc6df278754b1999dc0ecc5c8adaee">
+      <property key="Drawio:View:Tag" value="file1"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Capabilities (Gap)" id="id-39889">
         <child xsi:type="archimate:DiagramObject" id="id-39892" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#f9ebcc" archimateElement="id-46361">
           <bounds x="80" y="40" width="460" height="160"/>
@@ -1543,6 +1553,7 @@
             </child>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Capability Map (Baseline)" id="id-40126">
         <child xsi:type="archimate:DiagramObject" id="id-40129" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#faedcf" archimateElement="id-46357">
@@ -1700,6 +1711,7 @@
             <bounds x="27" y="100" width="120" height="47"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Value Stream Realization (Baseline)" id="id-40014">
         <child xsi:type="archimate:DiagramObject" id="id-40017" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46608">
@@ -1748,6 +1760,7 @@
             <bendpoint startX="3" startY="-46" endX="-116" endY="1"/>
           </sourceConnection>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Functional Decomposition Diagram (Baseline)" id="id-40467">
         <child xsi:type="archimate:DiagramObject" id="id-40470" targetConnections="id-40703" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffff80" archimateElement="id-46595">
@@ -1848,6 +1861,7 @@
             <sourceConnection xsi:type="archimate:Connection" id="id-40733" font="1|Arial|8.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-40603" target="id-40539" archimateRelationship="id-46795"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Organization Decomposition (nested)" id="id-39828">
         <child xsi:type="archimate:DiagramObject" id="id-39831" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffcc" archimateElement="id-46594">
@@ -1877,6 +1891,7 @@
             <bounds x="27" y="213" width="380" height="27"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Business Process Diagram (Baseline)" id="id-39618">
         <child xsi:type="archimate:DiagramObject" id="id-39621" targetConnections="id-39778" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46296">
@@ -1960,6 +1975,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-39740" targetConnections="id-39810 id-39818" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46613">
           <bounds x="473" y="20" width="133" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Organization Decomposition Diagram" id="id-40740" viewpoint="organization">
         <child xsi:type="archimate:DiagramObject" id="id-40743" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46594">
@@ -2013,6 +2029,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-40807" targetConnections="id-40846 id-40869" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46672">
           <bounds x="432" y="140" width="107" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Value Stream - Capability Cross-Mapping (Baseline)" id="id-41080">
         <child xsi:type="archimate:DiagramObject" id="id-41083" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#fbf0d7" archimateElement="id-46353">
@@ -2156,6 +2173,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-41332" targetConnections="id-41374" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46561">
           <bounds x="687" y="20" width="140" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Capability Realization (Baseline)" id="id-40881">
         <child xsi:type="archimate:DiagramObject" id="id-40884" targetConnections="id-41041" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#f5deaa" archimateElement="id-46361">
@@ -2227,6 +2245,7 @@
           <bounds x="462" y="122" width="9" height="9"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-41073" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-41008" target="id-40892" archimateRelationship="id-46323"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Resource Map (Target)" id="id-41419">
         <child xsi:type="archimate:DiagramObject" id="id-41430" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#f5deaa" archimateElement="id-46361">
@@ -2244,6 +2263,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-41502" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#f5deaa" archimateElement="id-46437">
           <bounds x="440" y="220" width="127" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Capability Realization (alt.)" id="id-42088">
         <child xsi:type="archimate:DiagramObject" id="id-42091" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46596">
@@ -2355,6 +2375,7 @@
             <bounds x="435" y="23" width="133" height="53"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Resource Realization (Target)" id="id-41936">
         <child xsi:type="archimate:DiagramObject" id="id-41955" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffaf" archimateElement="id-47175">
@@ -2378,6 +2399,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-42043" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffff" archimateElement="id-46862">
           <bounds x="40" y="327" width="147" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Capability Map (Target)" id="id-41555">
         <child xsi:type="archimate:DiagramObject" id="id-41558" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#faedcf" archimateElement="id-46357">
@@ -2555,6 +2577,7 @@
             </child>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Value Stream Map" id="id-42664">
         <child xsi:type="archimate:DiagramObject" id="id-42667" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#fbf0d7" archimateElement="id-46353">
@@ -2607,6 +2630,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-42744" targetConnections="id-42756" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46576">
           <bounds x="460" y="47" width="153" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Baseline Business Architecture" id="id-46148">
         <child xsi:type="archimate:DiagramModelReference" id="id-46151" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-41080">
@@ -2633,11 +2657,13 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46207" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-40014">
           <bounds x="533" y="33" width="127" height="80"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Gap analysis Business Architecture" id="id-46135">
         <child xsi:type="archimate:DiagramModelReference" id="id-46138" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-39889">
           <bounds x="100" y="60" width="120" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Target Business Architecture" id="id-46225">
         <child xsi:type="archimate:DiagramModelReference" id="id-46228" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-41936">
@@ -2649,6 +2675,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46244" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-41555">
           <bounds x="13" y="20" width="127" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
     </folder>
     <folder name="Phase A: Architecture Vision" id="id-6416d18517884208999bc076514c5c0a">
@@ -2783,6 +2810,7 @@
           <bounds x="1333" y="813" width="373" height="20"/>
           <content>Source: Strategyzer.com License: Creative Commons (CC BY-SA 3.0)</content>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Solution Concept Diagram" id="id-43087">
         <child xsi:type="archimate:DiagramObject" id="id-43146" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46503">
@@ -2811,9 +2839,11 @@
           <bounds x="342" y="189" width="9" height="9"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-43272" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-43198" target="id-43186" archimateRelationship="id-46334"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
     </folder>
     <folder name="Requirements Management" id="id-855a8ec4991e4f659c50a0d3a0109fc0">
+      <property key="Drawio:View:Tag" value="f2"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Requirements Realization Diagram" id="id-45080" viewpoint="requirements_realization">
         <child xsi:type="archimate:DiagramObject" id="id-45083" targetConnections="id-45218 id-45292" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffff" archimateElement="id-46304">
           <bounds x="93" y="413" width="347" height="67"/>
@@ -2893,6 +2923,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-45195" targetConnections="id-45241" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46607">
           <bounds x="173" y="207" width="140" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Goal Refinement" id="id-44756">
         <child xsi:type="archimate:DiagramObject" id="id-44759" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46512">
@@ -2936,9 +2967,11 @@
           <sourceConnection xsi:type="archimate:Connection" id="id-44884" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-44831" target="id-44815" archimateRelationship="id-47339"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-44889" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-44831" target="id-44823" archimateRelationship="id-47337"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
     </folder>
     <folder name="Phase E: Opportunities &amp; Solutions" id="id-5be549c8dc154d6b82159cc9c23bfbe0">
+      <property key="Drawio:View:Tag" value="file1"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Project Context Diagram" id="id-44372">
         <child xsi:type="archimate:DiagramObject" id="id-44375" targetConnections="id-44571" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffaaaa" archimateElement="id-47092">
           <bounds x="673" y="153" width="120" height="100"/>
@@ -3044,9 +3077,11 @@
         <child xsi:type="archimate:DiagramObject" id="id-44515" targetConnections="id-44556" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffff" archimateElement="id-46917">
           <bounds x="1253" y="33" width="133" height="73"/>
         </child>
+        <property key="Drawio:View:Tag" value="file1"/>
       </element>
     </folder>
     <folder name="Preliminary Phase" id="id-e5963f18406c4b4298ef5b6247b480cc">
+      <property key="Drawio:View:Tag" value="f2"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="SWOT analysis" id="id-38199">
         <child xsi:type="archimate:DiagramObject" id="id-47877" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47884">
           <bounds x="33" y="247" width="380" height="160"/>
@@ -3093,6 +3128,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-47907" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47914">
           <bounds x="813" y="420" width="380" height="160"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Porter's Five Forces" id="id-37988">
         <child xsi:type="archimate:DiagramObject" id="id-47843" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47864">
@@ -3128,6 +3164,7 @@
             <bounds x="77" y="87" width="127" height="80"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="PESTLE analysis" id="id-38045">
         <child xsi:type="archimate:DiagramObject" id="id-47799" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47823">
@@ -3175,6 +3212,7 @@
             <bounds x="57" y="147" width="120" height="87"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Balanced Scorecard" id="id-38122">
         <child xsi:type="archimate:DiagramObject" id="id-47771" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#ffffff" archimateElement="id-47787">
@@ -3216,6 +3254,7 @@
             <bounds x="193" y="40" width="133" height="73"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="IT Strategy" id="id-42397">
         <child xsi:type="archimate:DiagramObject" id="id-42400" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46503">
@@ -3244,6 +3283,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-42440" targetConnections="id-42466" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46497">
           <bounds x="433" y="413" width="160" height="53"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Business Strategy" id="id-43279">
         <child xsi:type="archimate:DiagramObject" id="id-43282" targetConnections="id-43468" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46574">
@@ -3302,6 +3342,7 @@
           <bounds x="347" y="13" width="133" height="53"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-43478" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-43390" target="id-43298" archimateRelationship="id-47302"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Ecosystem Map" id="id-42502">
         <child xsi:type="archimate:DiagramObject" id="id-42505" targetConnections="id-42638" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46594">
@@ -3362,6 +3403,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-42571" targetConnections="id-42621" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46653">
           <bounds x="234" y="343" width="93" height="40"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Driver &amp; Business Goals" id="id-43485">
         <child xsi:type="archimate:DiagramObject" id="id-43488" targetConnections="id-43629" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-47252">
@@ -3432,6 +3474,7 @@
           <bounds x="357" y="173" width="133" height="53"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-43704" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-43616" target="id-43528" archimateRelationship="id-47340"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Stakeholders and Concerns" id="id-44268" viewpoint="stakeholder">
         <child xsi:type="archimate:DiagramObject" id="id-44271" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-47259">
@@ -3465,6 +3508,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-44327" targetConnections="id-44355" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-47241">
           <bounds x="580" y="173" width="100" height="47"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Business Goals &amp; Principles" id="id-44216">
         <child xsi:type="archimate:DiagramObject" id="id-44219" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-46517">
@@ -3482,6 +3526,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-44243" targetConnections="id-44251 id-44261" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ccccff" archimateElement="id-47252">
           <bounds x="200" y="33" width="133" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Strategic Analyses" id="id-48056">
         <child xsi:type="archimate:DiagramModelReference" id="id-45331" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38122">
@@ -3499,9 +3544,11 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-48043" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-42502">
           <bounds x="40" y="47" width="113" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
     </folder>
     <folder name="TOGAF ADM" id="id-e78cf92652804c569a87c9b7e74aeb24">
+      <property key="Drawio:View:Tag" value="f2"/>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Preliminary Phase" id="id-45381">
         <child xsi:type="archimate:DiagramModelReference" id="id-45384" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44216">
           <bounds x="53" y="247" width="120" height="60"/>
@@ -3515,6 +3562,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-48099" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-48056">
           <bounds x="227" y="153" width="120" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase A: Architecture Vision" id="id-45840">
         <child xsi:type="archimate:DiagramModelReference" id="id-45843" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-43279">
@@ -3532,6 +3580,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-45883" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-42397">
           <bounds x="273" y="80" width="133" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase C: Information Systems Architecture" id="id-45901">
         <child xsi:type="archimate:DiagramModelReference" id="id-45904" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-45307">
@@ -3540,6 +3589,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-45912" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-45798">
           <bounds x="253" y="113" width="127" height="80"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Requirements Management" id="id-45956">
         <child xsi:type="archimate:DiagramModelReference" id="id-45959" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44756">
@@ -3548,6 +3598,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-48006" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44268">
           <bounds x="107" y="193" width="120" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase E: Opportunities &amp; Solutions" id="id-46064">
         <child xsi:type="archimate:DiagramModelReference" id="id-46067" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44372">
@@ -3556,6 +3607,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46075" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44638">
           <bounds x="140" y="233" width="127" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase D: Technology Architecture" id="id-45969">
         <child xsi:type="archimate:DiagramModelReference" id="id-45972" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-45943">
@@ -3573,6 +3625,7 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46004" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38504">
           <bounds x="347" y="160" width="127" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase B: Business Architecture" id="id-46262">
         <child xsi:type="archimate:DiagramModelReference" id="id-46265" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-46148">
@@ -3584,11 +3637,13 @@
         <child xsi:type="archimate:DiagramModelReference" id="id-46281" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-46135">
           <bounds x="313" y="47" width="113" height="73"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Phase F: Migration Planning" id="id-46122">
         <child xsi:type="archimate:DiagramModelReference" id="id-46125" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-44896">
           <bounds x="67" y="53" width="107" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
     </folder>
     <folder name="Phase F: Migration Planning" id="id-6c5cdbc5497b4ccfbfd4ffd5c1ca8d42">
@@ -3616,6 +3671,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-44676" targetConnections="id-44688" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ff9b9b" archimateElement="id-47379">
           <bounds x="173" y="80" width="107" height="60"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Digital Customer Intimacy Next Stage" id="id-44992">
         <child xsi:type="archimate:DiagramObject" id="id-44995" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffeaea" archimateElement="id-47393">
@@ -3649,6 +3705,7 @@
         <child xsi:type="archimate:DiagramObject" id="id-45036" targetConnections="id-45073" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#f5deaa" archimateElement="id-46319">
           <bounds x="447" y="100" width="133" height="67"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Target: CRM, Back Office and Data Warehouse Operational" id="id-44695">
         <child xsi:type="archimate:DiagramObject" id="id-44698" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e0ffe0" archimateElement="id-46339">
@@ -3684,6 +3741,7 @@
             <bounds x="32" y="122" width="133" height="53"/>
           </child>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
       <element xsi:type="archimate:ArchimateDiagramModel" name="Migration Planning" id="id-44896">
         <child xsi:type="archimate:DiagramObject" id="id-44899" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e0ffe0" archimateElement="id-47396">
@@ -3722,10 +3780,12 @@
           <bounds x="442" y="162" width="9" height="9"/>
           <sourceConnection xsi:type="archimate:Connection" id="id-44985" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-44943" target="id-44931" archimateRelationship="id-46300"/>
         </child>
+        <property key="Drawio:View:Tag" value="f2"/>
       </element>
     </folder>
     <folder name="Phase C: Information Systems Architecture" id="id-5cfc444ff37f4891b6633c0645729776">
       <folder name="Application Architecture" id="id-cab3ee9c2c9e4a8eb0fcb2bce3a1e354">
+        <property key="Drawio:View:Tag" value="file1"/>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Usage Diagram" id="id-37780" viewpoint="application_usage">
           <child xsi:type="archimate:DiagramObject" id="id-37783" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffdd" archimateElement="id-46608">
             <bounds x="107" y="127" width="680" height="93"/>
@@ -3797,6 +3857,7 @@
             <bounds x="377" y="347" width="133" height="53"/>
             <sourceConnection xsi:type="archimate:Connection" id="id-37981" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-37890" target="id-37845" archimateRelationship="id-46995"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Landscape Map (Baseline)" id="id-36393">
           <child xsi:type="archimate:Note" id="id-36396" font="1|arial|14.0|0|COCOA|1|" fontColor="#000000" lineColor="#c8c8c8" textAlignment="1" fillColor="#ffffff" alpha="0">
@@ -4228,6 +4289,7 @@
           <child xsi:type="archimate:DiagramObject" id="id-37411" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffff" archimateElement="id-46860">
             <bounds x="919" y="512" width="82" height="128"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Communication Diagram (Baseline)" id="id-35789">
           <child xsi:type="archimate:DiagramObject" id="id-35792" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#f4f4f4" archimateElement="id-47503">
@@ -4313,6 +4375,7 @@
               <sourceConnection xsi:type="archimate:Connection" id="id-36002" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-35888" target="id-35880" archimateRelationship="id-46969"/>
             </child>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Behavior (Target)" id="id-36009">
           <child xsi:type="archimate:DiagramObject" id="id-36012" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffaf" archimateElement="id-47058">
@@ -4371,6 +4434,7 @@
           <child xsi:type="archimate:DiagramObject" id="id-36098" targetConnections="id-36154" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffffaf" archimateElement="id-46702">
             <bounds x="667" y="73" width="87" height="58"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Communication Diagram (Target)" id="id-36161">
           <child xsi:type="archimate:DiagramObject" id="id-36164" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#f4f4f4" archimateElement="id-47503">
@@ -4460,8 +4524,11 @@
               <sourceConnection xsi:type="archimate:Connection" id="id-36386" font="1|Arial|11.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-36276" target="id-36268" archimateRelationship="id-46969"/>
             </child>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
-        <element xsi:type="archimate:ArchimateDiagramModel" name="Business Process-Application Service Matrix" id="id-38041"/>
+        <element xsi:type="archimate:ArchimateDiagramModel" name="Business Process-Application Service Matrix" id="id-38041">
+          <property key="Drawio:View:Tag" value="file1"/>
+        </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Data Dissemination Diagram" id="id-38381" viewpoint="layered">
           <child xsi:type="archimate:DiagramObject" id="id-38384" targetConnections="id-38492" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#afffff" archimateElement="id-46901">
             <bounds x="713" y="320" width="107" height="50"/>
@@ -4504,8 +4571,11 @@
             <bounds x="137" y="320" width="110" height="50"/>
             <sourceConnection xsi:type="archimate:Connection" id="id-38497" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-38450" target="id-38419" archimateRelationship="id-46954"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
-        <element xsi:type="archimate:ArchimateDiagramModel" name="Applications-Technology Matrix" id="id-39247"/>
+        <element xsi:type="archimate:ArchimateDiagramModel" name="Applications-Technology Matrix" id="id-39247">
+          <property key="Drawio:View:Tag" value="file1"/>
+        </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Architecture" id="id-45798">
           <child xsi:type="archimate:DiagramModelReference" id="id-45801" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-46085">
             <bounds x="80" y="60" width="107" height="60"/>
@@ -4516,11 +4586,13 @@
           <child xsi:type="archimate:DiagramModelReference" id="id-45817" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-45827">
             <bounds x="393" y="60" width="120" height="60"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Gap analysis Application Architecture" id="id-45827">
           <child xsi:type="archimate:DiagramModelReference" id="id-45830" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-37421">
             <bounds x="153" y="140" width="193" height="87"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Target Application Architecture" id="id-45922">
           <child xsi:type="archimate:DiagramModelReference" id="id-45925" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-36161">
@@ -4529,6 +4601,7 @@
           <child xsi:type="archimate:DiagramModelReference" id="id-45933" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-36009">
             <bounds x="53" y="187" width="187" height="73"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Baseline Application Architecture" id="id-46085">
           <child xsi:type="archimate:DiagramModelReference" id="id-46088" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-35789">
@@ -4543,6 +4616,7 @@
           <child xsi:type="archimate:DiagramModelReference" id="id-46112" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38041">
             <bounds x="220" y="173" width="153" height="67"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Application Communication Diagram (Gap analysis)" id="id-37421">
           <child xsi:type="archimate:DiagramObject" id="id-37424" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#404040" textAlignment="1" fillColor="#f4f4f4" archimateElement="id-47501">
@@ -4640,9 +4714,11 @@
               <sourceConnection xsi:type="archimate:Connection" id="id-37670" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" source="id-37522" target="id-37499" archimateRelationship="id-46962"/>
             </child>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
       </folder>
       <folder name="Data Architecture" id="id-fe3d5046621c4b38948c84f4d36c56fe">
+        <property key="Drawio:View:Tag" value="file1"/>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Class Diagram" id="id-39484" viewpoint="information_structure">
           <child xsi:type="archimate:DiagramObject" id="id-39487" targetConnections="id-39574" font="1|Arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffff80" archimateElement="id-46703">
             <bounds x="217" y="87" width="120" height="50"/>
@@ -4697,6 +4773,7 @@
               <bendpoint startX="60" startY="-45" endY="55"/>
             </sourceConnection>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
         <element xsi:type="archimate:ArchimateDiagramModel" name="Data Architecture" id="id-45307">
           <child xsi:type="archimate:DiagramModelReference" id="id-45310" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-39484">
@@ -4705,8 +4782,10 @@
           <child xsi:type="archimate:DiagramModelReference" id="id-45318" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#e1e1e1" model="id-38381">
             <bounds x="267" y="93" width="120" height="60"/>
           </child>
+          <property key="Drawio:View:Tag" value="file1"/>
         </element>
       </folder>
+      <property key="Drawio:View:Tag" value="file1"/>
     </folder>
     <element xsi:type="archimate:ArchimateDiagramModel" name="Architecture Overview" id="id-45418">
       <child xsi:type="archimate:Note" id="id-45421" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" textAlignment="1" fillColor="#ffe1d2">
@@ -4876,6 +4955,7 @@
       <child xsi:type="archimate:DiagramModelReference" id="id-45788" font="1|arial|10.0|0|COCOA|1|" fontColor="#000000" lineColor="#000000" fillColor="#ffaaaa" model="id-44896">
         <bounds x="467" y="853" width="127" height="34"/>
       </child>
+      <property key="Drawio:View:Tag" value="f2"/>
     </element>
   </folder>
   <purpose>ArchiSurance Case Study, Version 3.1, ArchiMate Model Exchange File Format
