@@ -86,6 +86,7 @@ jobs:
       - name: Export Archinsurance to drawio
         run: |
           docker run --rm \
+            --entrypoint "" \
             -v "$PWD:/workspace" \
             -w /workspace \
             woozymasta/archimate-ci-image:5.7.0-1.0.6 \
